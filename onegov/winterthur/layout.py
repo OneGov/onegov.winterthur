@@ -43,3 +43,13 @@ class AddressSubsetLayout(DefaultLayout):
             Link(_("Addresses"), self.request.class_link(AddressCollection)),
             Link(_(self.model.street), '#')
         ]
+
+
+class RoadworksLayout(DefaultLayout):
+
+    @cached_property
+    def breadcrumbs(self):
+        return [
+            Link(_("Homepage"), self.homepage_url),
+            Link(_("Roadworks"), '#'),
+        ]

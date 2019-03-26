@@ -1,0 +1,12 @@
+<div metal:use-macro="layout.base" i18n:domain="onegov.winterthur">
+    <tal:b metal:fill-slot="title">
+        ${title}
+    </tal:b>
+    <tal:b metal:fill-slot="content">
+        <ul>
+            <li tal:repeat="letter model.letters">
+                ${letter}
+            </li>
+        </ul>
+    </tal:b>
+</div>

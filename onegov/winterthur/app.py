@@ -1,11 +1,14 @@
 import re
 
+from cached_property import cached_property
 from onegov.core import utils
 from onegov.org import OrgApp
 from onegov.org.app import get_i18n_localedirs as get_org_i18n_localedirs
 from onegov.org.app import get_common_asset as default_common_asset
 from onegov.winterthur.initial_content import create_new_organisation
 from onegov.winterthur.theme import WinterthurTheme
+from onegov.winterthur.roadworks import RoadworksConfig
+from onegov.winterthur.roadworks import RoadworksClient
 
 
 class WinterthurApp(OrgApp):
@@ -26,6 +29,22 @@ class WinterthurApp(OrgApp):
     def enable_iframes(self, request):
         request.content_security_policy.frame_ancestors |= self.frame_ancestors
         request.include('iframe-resizer')
+
+    @property
+    def roadworks_cache(self):
+        return self.get_cache('roadworks', expiration_time=5 * 60)
+
+    @cached_property
+    def roadworks_client(self):
+        config = RoadworksConfig.lookup()
+
+        return RoadworksClient(
+            cache=self.roadworks_cache,
+            hostname=config.hostname,
+            endpoint=config.endpoint,
+            username=config.username,
+            password=config.password
+        )
 
 
 @WinterthurApp.tween_factory()
