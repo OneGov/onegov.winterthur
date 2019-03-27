@@ -1,7 +1,7 @@
 from onegov.winterthur.app import WinterthurApp
 from onegov.winterthur.collections import AddressCollection
 from onegov.winterthur.collections import AddressSubsetCollection
-from onegov.winterthur.roadworks import RoadworksCollection
+from onegov.winterthur.roadwork import RoadworkCollection, Roadwork
 
 
 @WinterthurApp.path(
@@ -20,7 +20,15 @@ def get_street_subset(app, street):
 
 
 @WinterthurApp.path(
-    model=RoadworksCollection,
-    path='/roadworks')
-def get_roadworks_collection(app):
-    return RoadworksCollection(app.roadworks_client)
+    model=RoadworkCollection,
+    path='/roadwork')
+def get_roadwork_collection(app):
+    return RoadworkCollection(app.roadwork_client)
+
+
+@WinterthurApp.path(
+    model=Roadwork,
+    path='/roadwork/{id}',
+    converters=dict(id=int))
+def get_roadwork(app, id):
+    return RoadworkCollection(app.roadwork_client).by_id(id)

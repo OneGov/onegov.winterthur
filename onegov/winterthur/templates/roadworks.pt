@@ -8,5 +8,29 @@
                 ${letter}
             </li>
         </ul>
+
+        <dl>
+            <tal:b repeat="roadwork model.roadwork">
+                <dt>
+                    <a href="${request.link(roadwork)}">
+                        <div>${roadwork["ProjektBezeichnung"]}</div>
+                        <div>${roadwork["ProjektBereich"]}</div>
+                    </a>
+                </dt>
+                <dd>
+                    <div>
+                        <span i18n:translate>Start:</span>
+                        ${layout.format_date(roadwork["DauerVon"], 'weekday_long')},
+                        ${layout.format_date(roadwork["DauerVon"], 'date_long')}
+                    </div>
+
+                    <div>
+                        <span i18n:translate>End:</span>
+                        ${layout.format_date(roadwork["DauerBis"], 'weekday_long')},
+                        ${layout.format_date(roadwork["DauerBis"], 'date_long')}
+                    </div>
+                </dd>
+            </tal:b>
+        </dl>
     </tal:b>
 </div>

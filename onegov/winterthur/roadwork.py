@@ -1,3 +1,4 @@
+import isodate
 import pycurl
 
 from cached_property import cached_property
@@ -5,19 +6,20 @@ from datetime import datetime, timedelta
 from io import BytesIO
 from onegov.core.custom import json
 from pathlib import Path
+from purl import URL
 
 
-class RoadworksError(Exception):
+class RoadworkError(Exception):
     pass
 
 
-class RoadworksConnectionError(RoadworksError):
+class RoadworkConnectionError(RoadworkError):
     pass
 
 
-class RoadworksConfig(object):
+class RoadworkConfig(object):
     """ Looks at ~/.pdb.secret and /etc/pdb.secret (in this order), to extract
-    the configuration used for the RoadworksClient class.
+    the configuration used for the RoadworkClient class.
 
     The configuration is as follows::
 
@@ -51,7 +53,7 @@ class RoadworksConfig(object):
                 return cls(**cls.parse(path))
 
         paths = ', '.join(str(p) for p in cls.lookup_paths())
-        raise RoadworksError(
+        raise RoadworkError(
             f"No pdb configuration found in {paths}")
 
     @classmethod
@@ -86,7 +88,7 @@ class RoadworksConfig(object):
         return result
 
 
-class RoadworksClient(object):
+class RoadworkClient(object):
     """ A proxy to Winterthur's internal roadworks service. Uses redis as
     a caching mechanism to ensure performance and reliability.
 
@@ -137,6 +139,7 @@ class RoadworksClient(object):
         connect to the backend.
 
         """
+        path = path.lstrip('/')
 
         cached = self.cache.get(path)
 
@@ -144,7 +147,7 @@ class RoadworksClient(object):
             try:
                 status, body = self.get_uncached(path)
             except pycurl.error:
-                raise RoadworksConnectionError(
+                raise RoadworkConnectionError(
                     f"Could not connect to {self.hostname}")
 
             if status == 200:
@@ -156,7 +159,7 @@ class RoadworksClient(object):
 
                 return body
 
-            raise RoadworksError(f"{path} returned {status}")
+            raise RoadworkError(f"{path} returned {status}")
 
         # no cache yet, return result and cache it
         if not cached:
@@ -175,7 +178,7 @@ class RoadworksClient(object):
         if lifetime_horizon < now < downtime_horizon:
             try:
                 return refresh()
-            except RoadworksConnectionError:
+            except RoadworkConnectionError:
                 return cached['body']
 
         # outside the downtime lifetime, force refresh and raise errors
@@ -200,7 +203,7 @@ class RoadworksClient(object):
         return response[0] == 200
 
 
-class RoadworksCollection(object):
+class RoadworkCollection(object):
 
     def __init__(self, client):
         self.client = client
@@ -211,3 +214,60 @@ class RoadworksCollection(object):
             item["Letter"] for item in
             self.client.get('odata/getBaustellenIndex').get('value', ())
         ]
+
+    def roadwork_by_filter(self, filter):
+        url = URL('odata/Baustellen')\
+            .query_param('addGisLink', 'False')\
+            .query_param('$filter', filter)
+
+        records = self.client.get(url.as_string()).get('value', ())
+        records = (r for r in records if r['Internet'])
+
+        work = [Roadwork(r) for r in records]
+        work.sort(key=lambda r: r['DauerBis'])
+
+        return work
+
+    @property
+    def roadwork(self):
+        date = datetime.today()
+
+        return self.roadwork_by_filter(filter=' and '.join((
+            f'DauerVon le {date.strftime("%Y-%m-%d")}',
+            f'DauerBis ge {date.strftime("%Y-%m-%d")}',
+        )))
+
+    def by_id(self, id):
+        work = self.roadwork_by_filter(f'Id eq {int(id)}')
+        return work and work[0] or None
+
+
+class Roadwork(object):
+
+    def __init__(self, data):
+        self.data = data
+
+        self.convertors = {
+            'DauerVon': isodate.parse_datetime,
+            'DauerBis': isodate.parse_datetime,
+        }
+
+    @property
+    def id(self):
+        return self['Id']
+
+    @property
+    def title(self):
+        parts = (self[key] for key in ('ProjektBezeichnung', 'ProjektBereich'))
+        parts = (p.strip() for p in parts if p)
+        parts = (p for p in parts)
+
+        return ' '.join(parts)
+
+    def __getitem__(self, key):
+        value = self.data[key]
+
+        if key in self.convertors:
+            return self.convertors[key](value)
+
+        return value
