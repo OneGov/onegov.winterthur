@@ -205,15 +205,29 @@ class RoadworkClient(object):
 
 class RoadworkCollection(object):
 
-    def __init__(self, client):
+    def __init__(self, client, letter=None, query=None):
         self.client = client
+        self.query = None
+        self.letter = None
+
+        if query:
+            self.query = query.lower()
+
+        elif letter:
+            self.letter = letter.lower()
 
     @property
     def letters(self):
-        return [
-            item["Letter"] for item in
-            self.client.get('odata/getBaustellenIndex').get('value', ())
-        ]
+        letters = set()
+
+        for roadwork in self.by_letter(None).roadwork:
+            for letter in roadwork.letters:
+                letters.add(letter)
+
+        letters = list(letters)
+        letters.sort()
+
+        return letters
 
     def roadwork_by_filter(self, filter):
         url = URL('odata/Baustellen')\
@@ -232,14 +246,34 @@ class RoadworkCollection(object):
     def roadwork(self):
         date = datetime.today()
 
-        return self.roadwork_by_filter(filter=' and '.join((
+        roadwork = self.roadwork_by_filter(filter=' and '.join((
             f'DauerVon le {date.strftime("%Y-%m-%d")}',
             f'DauerBis ge {date.strftime("%Y-%m-%d")}',
         )))
 
+        # The backend supports searches/filters, but the used dataset is
+        # so small that it makes little sense to use that feature, since it
+        # would lead to a lot more cache-misses on our end.
+        #
+        # Instead we simply loop through the results and filter them out.
+        if self.query:
+            roadwork = [
+                r for r in roadwork if self.query in r.title.lower()
+            ]
+
+        elif self.letter:
+            roadwork = [
+                r for r in roadwork if self.letter in r.letters
+            ]
+
+        return roadwork
+
     def by_id(self, id):
         work = self.roadwork_by_filter(f'Id eq {int(id)}')
         return work and work[0] or None
+
+    def by_letter(self, letter):
+        return self.__class__(self.client, letter=letter, query=None)
 
 
 class Roadwork(object):
@@ -255,6 +289,12 @@ class Roadwork(object):
     @property
     def id(self):
         return self['Id']
+
+    @property
+    def letters(self):
+        for key in ('ProjektBezeichnung', 'ProjektBereich'):
+            if self[key]:
+                yield self[key][0].lower()
 
     @property
     def title(self):

@@ -22,8 +22,8 @@ def get_street_subset(app, street):
 @WinterthurApp.path(
     model=RoadworkCollection,
     path='/roadwork')
-def get_roadwork_collection(app):
-    return RoadworkCollection(app.roadwork_client)
+def get_roadwork_collection(app, letter=None, query=None):
+    return RoadworkCollection(app.roadwork_client, letter=letter, query=query)
 
 
 @WinterthurApp.path(

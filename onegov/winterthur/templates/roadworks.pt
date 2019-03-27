@@ -3,34 +3,64 @@
         ${title}
     </tal:b>
     <tal:b metal:fill-slot="content">
-        <ul>
-            <li tal:repeat="letter model.letters">
-                ${letter}
-            </li>
-        </ul>
+        <div class="row reverse-on-mobile">
+            <div class="columns medium-8 small-12">
+                <dl>
+                    <tal:b repeat="roadwork model.roadwork">
+                        <dt>
+                            <a href="${request.link(roadwork)}">
+                                <div>${roadwork["ProjektBezeichnung"]}</div>
+                                <div>${roadwork["ProjektBereich"]}</div>
+                            </a>
+                        </dt>
+                        <dd>
+                            <div>
+                                <span i18n:translate>Start:</span>
+                                ${layout.format_date(roadwork["DauerVon"], 'weekday_long')},
+                                ${layout.format_date(roadwork["DauerVon"], 'date_long')}
+                            </div>
 
-        <dl>
-            <tal:b repeat="roadwork model.roadwork">
-                <dt>
-                    <a href="${request.link(roadwork)}">
-                        <div>${roadwork["ProjektBezeichnung"]}</div>
-                        <div>${roadwork["ProjektBereich"]}</div>
-                    </a>
-                </dt>
-                <dd>
-                    <div>
-                        <span i18n:translate>Start:</span>
-                        ${layout.format_date(roadwork["DauerVon"], 'weekday_long')},
-                        ${layout.format_date(roadwork["DauerVon"], 'date_long')}
-                    </div>
+                            <div>
+                                <span i18n:translate>End:</span>
+                                ${layout.format_date(roadwork["DauerBis"], 'weekday_long')},
+                                ${layout.format_date(roadwork["DauerBis"], 'date_long')}
+                            </div>
+                        </dd>
+                    </tal:b>
+                </dl>
+            </div>
+            <div class="columns medium-4 small-12">
+                <div class="filter-panel">
+                    <h2 class="filter-title" i18n:translate>Search</h2>
 
-                    <div>
-                        <span i18n:translate>End:</span>
-                        ${layout.format_date(roadwork["DauerBis"], 'weekday_long')},
-                        ${layout.format_date(roadwork["DauerBis"], 'date_long')}
-                    </div>
-                </dd>
-            </tal:b>
-        </dl>
+                    <form id="inline-search" class="searchbox" action="${request.link(model.by_letter(None))}" method="GET">
+                        <div class="row collapse">
+                            <div class="columns small-10">
+                                <input id="search-term" name="query" type="text" placeholder="Search" required="" autocomplete="off" autocorrect="off" i18n:attributes="placeholder" value="${model.query and model.query or ''}">
+                                <button type="reset" class="reset-button" tabindex="-1"></button>
+                            </div>
+                            <div class="columns small-2">
+                                <button type="submit" class="button postfix" aria-label="Search" i18n:attributes="aria-label">
+                                    <i class="fa fa-search"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="filter-panel">
+                    <h2 class="filter-title" i18n:translate>A to Z</h2>
+
+                    <ul class="tags">
+                        <li tal:repeat="letter model.letters" class="click-through">
+                            <span class="blank-label rounded ${letter == model.letter and 'active'}">
+                                <a href="${request.link(model.by_letter(letter=(letter != model.letter and letter or None)))}">${letter.upper()}</a>
+                            </span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
     </tal:b>
 </div>
