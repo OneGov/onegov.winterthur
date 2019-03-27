@@ -1,12 +1,17 @@
 import pycurl
 
 from cached_property import cached_property
+from datetime import datetime, timedelta
 from io import BytesIO
 from onegov.core.custom import json
 from pathlib import Path
 
 
 class RoadworksError(Exception):
+    pass
+
+
+class RoadworksConnectionError(RoadworksError):
     pass
 
 
@@ -112,17 +117,69 @@ class RoadworksClient(object):
     def url(self, path):
         return f'http://{self.endpoint}/{path}'
 
-    def get(self, path, expiration_time=5 * 60):
-        status, body = self.cache.get_or_create(
-            key=path,
-            expiration_time=expiration_time,
-            should_cache_fn=self.is_cacheable,
-            creator=lambda: self.get_uncached(path))
+    def get(self, path, lifetime=5 * 60, downtime=60 * 60):
+        """ Requests the given path, returning the resulting json if
+        successful.
 
-        if status != 200:
-            raise RoadworksError(f"{path} returned HTTP {status}")
+        A cache is used in two stages:
 
-        return body
+        * At the lifetime stage, the cache is returned unconditionally.
+        * At the end of the lifetime, the cache is refreshed if possible.
+        * At the end of the downtime stage the cache forcefully refreshed.
+
+        During its lifetime the object is basically up to 5 minutes out of
+        date. But since the backend may not be available when that time
+        expires we operate with a downtime that is higher (1 hour).
+
+        This means that a downtime in the backend will not result in evicted
+        caches, even if the lifetime is up. Once the downtime limit is up we
+        do however evict the cache forcefully, raising an error if we cannot
+        connect to the backend.
+
+        """
+
+        cached = self.cache.get(path)
+
+        def refresh():
+            try:
+                status, body = self.get_uncached(path)
+            except pycurl.error:
+                raise RoadworksConnectionError(
+                    f"Could not connect to {self.hostname}")
+
+            if status == 200:
+                self.cache.set(path, {
+                    'created': datetime.utcnow(),
+                    'status': status,
+                    'body': body
+                })
+
+                return body
+
+            raise RoadworksError(f"{path} returned {status}")
+
+        # no cache yet, return result and cache it
+        if not cached:
+            return refresh()
+
+        now = datetime.utcnow()
+        lifetime_horizon = cached['created'] + timedelta(seconds=lifetime)
+        downtime_horizon = cached['created'] + timedelta(seconds=downtime)
+
+        # within cache lifetime, return cached value
+        if now <= lifetime_horizon:
+            return cached['body']
+
+        # outside cache lifetime, but still in downtime horizon, try to
+        # refresh the value but ignore errors
+        if lifetime_horizon < now < downtime_horizon:
+            try:
+                return refresh()
+            except RoadworksConnectionError:
+                return cached['body']
+
+        # outside the downtime lifetime, force refresh and raise errors
+        return refresh()
 
     def get_uncached(self, path):
         body = BytesIO()
