@@ -28,5 +28,6 @@ def view_roadwork(self, request):
     return {
         'layout': RoadworkLayout(self, request),
         'title': self.title,
-        'model': self
+        'model': self,
+        'back': request.class_link(RoadworkCollection)
     }

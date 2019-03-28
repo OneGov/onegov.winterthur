@@ -15,6 +15,44 @@
                 ${layout.format_date(model["DauerBis"], 'weekday_long')},
                 ${layout.format_date(model["DauerBis"], 'date_long')}
             </dd>
+
+            <dt i18n:translate>Responsible official:</dt>
+            <dd>
+                <dl>
+                    <dt i18n:translate>Construction Site:</dt>
+                    <dd>
+                        <ul>
+                            <li tal:condition='model["SachbearbeiterBau"]'>
+                                ${model["SachbearbeiterBau"]}
+                            </li>
+                            <li tal:condition='model["SachbearbeiterBauZusatz"]'>
+                                ${model["SachbearbeiterBauZusatz"]}
+                            </li>
+                        </ul>
+                    </dd>
+
+                    <dt i18n:translate>Traffic:</dt>
+                    <dd>
+                        <ul>
+                            <li tal:condition='model["SachbearbeiterVerkehr"]'>
+                                ${model["SachbearbeiterVerkehr"]}
+                            </li>
+                            <li tal:condition='model["SachbearbeiterVerkehrZusatz"]'>
+                                ${model["SachbearbeiterVerkehrZusatz"]}
+                            </li>
+                        </ul>
+                    </dd>
+                </dl>
+            </dd>
+
+            <dt i18n:translate>Provisions / Restrictions:</dt>
+            <dd>
+                ${model["Massnahmen"] or ''}
+            </dd>
         </dl>
+
+        <p>
+            <a href="${back}" i18n:translate>Back</a>
+        </p>
     </tal:b>
 </div>
