@@ -269,8 +269,20 @@ class RoadworkCollection(object):
         return roadwork
 
     def by_id(self, id):
-        work = self.roadwork_by_filter(f'Id eq {int(id)}')
-        return work and work[0] or None
+
+        # we can search this by id on the backend as well, but this way we
+        # once reuse the local cache, increasing cache-hits, which is
+        # preferable as long as we look at a small dataset
+        for r in self.roadwork:
+            if r.id == id:
+                return r
+
+        # secondary lookup is against the subsections.. this probably calls
+        # for an index eventually
+        for r in self.roadwork:
+            for section in r.sections:
+                if section.id == id:
+                    return section
 
     def by_letter(self, letter):
         return self.__class__(self.client, letter=letter, query=None)
@@ -294,7 +306,10 @@ class Roadwork(object):
     def letters(self):
         for key in ('ProjektBezeichnung', 'ProjektBereich'):
             if self[key]:
-                yield self[key][0].lower()
+                letter = self[key][0].lower()
+
+                if letter in ('abcdefghijklmnopqrstuvwxyz'):
+                    yield letter
 
     @property
     def title(self):
@@ -304,6 +319,16 @@ class Roadwork(object):
 
         return ' '.join(parts)
 
+    @property
+    def sections(self):
+        return [
+            self.__class__({
+                'Id': r['TeilbaustelleId'],
+                'Teilbaustellen': [],
+                **r
+            }) for r in self['Teilbaustellen']
+        ]
+
     def __getitem__(self, key):
         value = self.data[key]
 
@@ -311,3 +336,6 @@ class Roadwork(object):
             return self.convertors[key](value)
 
         return value
+
+    def __contains__(self, key):
+        return key in self.data
