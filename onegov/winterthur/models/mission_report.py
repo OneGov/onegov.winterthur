@@ -7,6 +7,7 @@ from sqlalchemy import Boolean
 from sqlalchemy import Column
 from sqlalchemy import ForeignKey
 from sqlalchemy import Integer
+from sqlalchemy import Numeric
 from sqlalchemy import Text
 from sqlalchemy.orm import relationship
 from uuid import uuid4
@@ -23,10 +24,8 @@ class MissionReport(
     #: the date of the report
     date = Column(UTCDateTime, nullable=False)
 
-    #: how long the mission lasted - this is text for now as the original
-    #: data is held in text and it's not clear if we can count on it being
-    #: structured enough or any other type
-    duration = Column(Text, nullable=False)
+    #: how long the mission lasted, in hours
+    duration = Column(Numeric(precision=6, scale=2), nullable=False)
 
     #: the nature of the mission
     nature = Column(Text, nullable=False)
@@ -35,16 +34,20 @@ class MissionReport(
     location = Column(Text, nullable=False)
 
     #: actually active personnel
-    personnel = Column(Text, nullable=False)
+    personnel = Column(Integer, nullable=False)
 
     #: backup personnel
-    backup = Column(Text, nullable=False)
+    backup = Column(Integer, nullable=False)
 
     #: the Zivilschutz was involved
     civil_defence = Column(Boolean, nullable=False, default=False)
 
     #: the vehicle use of the mission report
     used_vehicles = relationship('MissionReportVehicleUse')
+
+    @property
+    def title(self):
+        return self.nature
 
 
 class MissionReportVehicle(Base):

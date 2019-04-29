@@ -332,3 +332,16 @@ input[data-street-search]::placeholder {
         }
     }
 }
+
+/*
+    Datetime Picker
+*/
+
+.datetimepicker {
+    background: $gray-light !important;
+    border: 0;
+
+    &:hover {
+        color: $gray-dark !important;
+    }
+}

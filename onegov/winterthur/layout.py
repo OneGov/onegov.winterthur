@@ -3,7 +3,9 @@ from onegov.org.layout import DefaultLayout
 from onegov.core.elements import Link, LinkGroup, Intercooler
 from onegov.winterthur import _
 from onegov.winterthur.collections import AddressCollection
+from onegov.winterthur.collections import MissionReportCollection
 from onegov.winterthur.collections import MissionReportVehicleCollection
+from onegov.winterthur.models import MissionReport
 from onegov.winterthur.roadwork import RoadworkCollection
 
 
@@ -68,37 +70,67 @@ class RoadworkLayout(DefaultLayout):
         ]
 
 
-class MissionReportCollectionLayout(DefaultLayout):
+class MissionReportLayout(DefaultLayout):
+
+    def __init__(self, model, request, *suffixes):
+        self.suffixes = suffixes
+
+        super().__init__(model, request)
+
+    def breadcrumbs_iter(self):
+        yield Link(
+            _("Homepage"),
+            self.homepage_url)
+
+        yield Link(
+            _("Mission Reports"),
+            self.request.class_link(MissionReportCollection))
+
+        yield from self.suffixes
 
     @cached_property
     def breadcrumbs(self):
-        return [
-            Link(_("Homepage"), self.homepage_url),
-            Link(_("Mission Reports"), '#'),
-        ]
+        return list(self.breadcrumbs_iter())
 
     @cached_property
     def editbar_links(self):
+
+        # this is a bit different then usual, trying out some things as part
+        # of this project - feel free to change this again the future
         if not self.request.is_manager:
             return
 
-        return [
-            Link(
-                _("Vehicles"), self.request.class_link(
-                    MissionReportVehicleCollection
-                ), attrs={'class': 'vehicles'}
-            ),
-            LinkGroup(
-                title=_("Add"),
-                links=[
-                    Link(
-                        text=_("Mission Report"),
-                        url=self.request.link(
-                            self.model,
-                            name='+new'
-                        ),
-                        attrs={'class': 'new-report'}
-                    )
-                ]
-            ),
-        ]
+        if self.suffixes and not getattr(self.suffixes[-1], 'editbar', True):
+            return
+
+        if isinstance(self.model, MissionReportCollection):
+
+            return [
+                Link(
+                    _("Vehicles"), self.request.class_link(
+                        MissionReportVehicleCollection
+                    ), attrs={'class': 'vehicles'}
+                ),
+                LinkGroup(
+                    title=_("Add"),
+                    links=[
+                        Link(
+                            text=_("Mission Report"),
+                            url=self.request.link(
+                                self.model,
+                                name='+new'
+                            ),
+                            attrs={'class': 'new-report'}
+                        )
+                    ]
+                ),
+            ]
+
+        if isinstance(self.model, MissionReport):
+            return [
+                Link(
+                    _("Edit"),
+                    self.request.link(self.model, name='edit'),
+                    attrs={'class': 'edit-link'}
+                )
+            ]

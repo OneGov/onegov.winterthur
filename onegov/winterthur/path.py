@@ -42,28 +42,29 @@ def get_roadwork(app, id):
 @WinterthurApp.path(
     model=MissionReportCollection,
     path='/mission-reports')
-def get_mission_reports(app, page=0):
-    return MissionReportCollection(app.session(), page=page)
+def get_mission_reports(request, page=0):
+    return MissionReportCollection(
+        request.session, page=page, include_hidden=request.is_manager)
 
 
 @WinterthurApp.path(
     model=MissionReportVehicleCollection,
     path='/mission-reports/vehicles')
-def get_mission_report_vehicles(app):
-    return MissionReportVehicleCollection(app.session())
+def get_mission_report_vehicles(request):
+    return MissionReportVehicleCollection(request.session)
 
 
 @WinterthurApp.path(
     model=MissionReport,
     path='/mission-reports/report/{id}',
     converters=dict(id=UUID))
-def get_mission_report(app, id):
-    return get_mission_reports(app).by_id(id)
+def get_mission_report(request, id):
+    return get_mission_reports(request).by_id(id)
 
 
 @WinterthurApp.path(
     model=MissionReportVehicle,
     path='/mission-reports/vehicle/{id}',
     converters=dict(id=UUID))
-def get_mission_report_vehicle(app, id):
-    return get_mission_report_vehicles(app).by_id(id)
+def get_mission_report_vehicle(request, id):
+    return get_mission_report_vehicles(request).by_id(id)

@@ -1,13 +1,15 @@
 from onegov.core.collection import GenericCollection, Pagination
 from onegov.winterthur.models import MissionReport
 from onegov.winterthur.models import MissionReportVehicle
+from sqlalchemy import or_
 
 
 class MissionReportCollection(GenericCollection, Pagination):
 
-    def __init__(self, session, page=0):
+    def __init__(self, session, page=0, include_hidden=False):
         self.session = session
         self.page = page
+        self.include_hidden = include_hidden
 
     @property
     def model_class(self):
@@ -15,6 +17,17 @@ class MissionReportCollection(GenericCollection, Pagination):
 
     def __eq__(self, other):
         return self.page == other.page
+
+    def query(self):
+        query = super().query()
+
+        if not self.include_hidden:
+            query = query.filter(or_(
+                MissionReport.meta['is_hidden_from_public'] == False,
+                MissionReport.meta['is_hidden_from_public'] == None
+            ))
+
+        return query
 
     def subset(self):
         return self.query()

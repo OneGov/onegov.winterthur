@@ -7,6 +7,18 @@
             <p i18n:translate="">No mission reports found.</p>
         </div>
 
+        <table condition="reports">
+            <tbody>
+                <tr tal:repeat="report reports">
+                    <td>
+                        <a href="${request.link(report)}">
+                            ${report.title}
+                        </a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
         <div tal:condition="reports">
             <div class="pagination-centered">
                 <metal:b use-macro="layout.macros['pagination']" tal:define="
