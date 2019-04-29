@@ -1,0 +1,17 @@
+<div metal:use-macro="layout.base" i18n:domain="onegov.winterthur">
+    <tal:b metal:fill-slot="title">
+        ${title}
+    </tal:b>
+    <tal:b metal:fill-slot="content">
+        <div tal:condition="not:reports">
+            <p i18n:translate="">No mission reports found.</p>
+        </div>
+
+        <div tal:condition="reports">
+            <div class="pagination-centered">
+                <metal:b use-macro="layout.macros['pagination']" tal:define="
+                    collection layout.model; current_page layout.model;" />
+            </div>
+        </div>
+    </tal:b>
+</div>

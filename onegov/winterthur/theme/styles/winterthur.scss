@@ -34,6 +34,19 @@ input[data-street-search]::placeholder {
 }
 
 /*
+    Edit bar
+*/
+.edit-bar {
+    .new-report::before {
+        @include icon('\f0f6');
+    }
+
+    .vehicles::before {
+        @include icon('\f0f9');
+    }
+}
+
+/*
     Sidepanel
 */
 .side-panel.highlighted {
