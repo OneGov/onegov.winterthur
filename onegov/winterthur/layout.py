@@ -96,7 +96,7 @@ class MissionReportLayout(DefaultLayout):
     def editbar_links(self):
 
         # this is a bit different then usual, trying out some things as part
-        # of this project - feel free to change this again the future
+        # of this project - probably not a good idea to copy this elsewhere
         if not self.request.is_manager:
             return
 
@@ -104,7 +104,6 @@ class MissionReportLayout(DefaultLayout):
             return
 
         if isinstance(self.model, MissionReportCollection):
-
             return [
                 Link(
                     _("Vehicles"), self.request.class_link(
@@ -121,6 +120,23 @@ class MissionReportLayout(DefaultLayout):
                                 name='+new'
                             ),
                             attrs={'class': 'new-report'}
+                        )
+                    ]
+                ),
+            ]
+
+        if isinstance(self.model, MissionReportVehicleCollection):
+            return [
+                LinkGroup(
+                    title=_("Add"),
+                    links=[
+                        Link(
+                            text=_("Vehicle"),
+                            url=self.request.link(
+                                self.model,
+                                name='+new'
+                            ),
+                            attrs={'class': 'new-vehicle'}
                         )
                     ]
                 ),

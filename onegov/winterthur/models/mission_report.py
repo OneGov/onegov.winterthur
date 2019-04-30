@@ -1,7 +1,8 @@
 from onegov.core.orm import Base
+from onegov.core.orm.abstract import associated
 from onegov.core.orm.mixins import ContentMixin
 from onegov.core.orm.types import UUID, UTCDateTime
-from onegov.file import AssociatedFiles
+from onegov.file import File
 from onegov.org.models import HiddenFromPublicExtension
 from sqlalchemy import Boolean
 from sqlalchemy import Column
@@ -13,8 +14,11 @@ from sqlalchemy.orm import relationship
 from uuid import uuid4
 
 
-class MissionReport(
-        Base, AssociatedFiles, ContentMixin, HiddenFromPublicExtension):
+class MissionReportFile(File):
+    __mapper_args__ = {'polymorphic_identity': 'mission-report-file'}
+
+
+class MissionReport(Base, ContentMixin, HiddenFromPublicExtension):
 
     __tablename__ = 'mission_reports'
 
@@ -45,12 +49,19 @@ class MissionReport(
     #: the vehicle use of the mission report
     used_vehicles = relationship('MissionReportVehicleUse')
 
+    #: pictures of the mission
+    pictures = associated(MissionReportFile, 'pictures', 'one-to-many')
+
     @property
     def title(self):
-        return self.nature
+        return self.nature.split(':', 1)[0]
+
+    @property
+    def readable_duration(self):
+        return str(self.duration).rstrip('.0') + 'h'
 
 
-class MissionReportVehicle(Base):
+class MissionReportVehicle(Base, ContentMixin, HiddenFromPublicExtension):
 
     __tablename__ = 'mission_report_vehicles'
 
@@ -58,16 +69,24 @@ class MissionReportVehicle(Base):
     id = Column(UUID, nullable=False, primary_key=True, default=uuid4)
 
     #: the short id of the vehicle
-    designation = Column(Text, nullable=False)
-
-    #: the longer name of the vehicle
     name = Column(Text, nullable=False)
 
-    #: the symbol shown with the vehicle (from a predefined list)
-    symbol = Column(Text, nullable=True)
+    #: the longer name of the vehicle
+    description = Column(Text, nullable=False)
+
+    #: symbol of the vehicle
+    symbol = associated(MissionReportFile, 'symbol', 'one-to-one')
 
     #: a website describing the vehicle
     website = Column(Text, nullable=True)
+
+    @property
+    def title(self):
+        return f'{self.name} - {self.description}'
+
+    @property
+    def readable_website(self):
+        return self.website.replace('https://', '').replace('http://', '')
 
 
 class MissionReportVehicleUse(Base):

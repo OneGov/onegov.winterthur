@@ -7,14 +7,27 @@
             <p i18n:translate="">No mission reports found.</p>
         </div>
 
-        <table condition="reports">
+        <table condition="reports" style="width: 100%;">
+            <thead>
+                <tr>
+                    <th class="min-width-column" i18n:translate>Date</th>
+                    <th class="min-width-column" i18n:translate>Alarm</th>
+                    <th class="min-width-column" i18n:translate>Duration</th>
+                    <th i18n:translate>Mission nature</th>
+                    <th class="min-width-column" i18n:translate>Location</th>
+                    <th class="min-width-column" i18n:translate>Pers*</th>
+                </tr>
+            </thead>
             <tbody>
                 <tr tal:repeat="report reports">
+                    <td>${report.date.strftime('%d.%m.%Y')}</td>
+                    <td>${report.date.strftime('%H:%M')}</td>
+                    <td>${report.readable_duration}</td>
                     <td>
-                        <a href="${request.link(report)}">
-                            ${report.title}
-                        </a>
+                        <a href="${request.link(report)}">${report.nature}</a>
                     </td>
+                    <td>${report.location}</td>
+                    <td>${report.personnel} / ${report.backup}</td>
                 </tr>
             </tbody>
         </table>
