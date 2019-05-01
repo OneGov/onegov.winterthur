@@ -64,3 +64,15 @@
         </tal:b>
     </dl>
 </metal:inline_search_entry_lead>
+
+<metal:used_vehicles define-macro="used_vehicles" i18n:domain="onegov.winterthur">
+    <ul class="used-vehicles">
+        <tal:b repeat="use python: sorted(used_vehicles, key=lambda u: u.vehicle.name)">
+            <li tal:repeat="n range(0, max(min(use.count, 10), 1))">
+                <a tal:attributes="href use.vehicle.website or None">
+                    <img class="vehicle-icon" src="${request.link(use.vehicle.symbol)}">
+                </a>
+            </li>
+        </tal:b>
+    </ul>
+</metal:used_vehicles>

@@ -7,7 +7,7 @@
             <p i18n:translate="">No vehicles found.</p>
         </div>
 
-        <table condition="vehicles" style="width=100%;">
+        <table condition="vehicles" style="width=100%;" class="valign-top">
             <thead>
                 <tr>
                     <th class="min-width-column" i18n:translate>Name</th>
@@ -33,7 +33,7 @@
                         </a>
                     </td>
                     <td>
-                        <img src="${request.link(vehicle.symbol)}">
+                        <img clas="vehicle-icon" src="${request.link(vehicle.symbol)}">
                     </td>
                     <td>
                         <tal:b condition="vehicle.is_hidden_from_public" i18n:translate>
