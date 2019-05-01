@@ -47,7 +47,9 @@ class MissionReport(Base, ContentMixin, HiddenFromPublicExtension):
     civil_defence = Column(Boolean, nullable=False, default=False)
 
     #: the vehicle use of the mission report
-    used_vehicles = relationship('MissionReportVehicleUse')
+    used_vehicles = relationship(
+        'MissionReportVehicleUse',
+        cascade="all, delete-orphan")
 
     #: pictures of the mission
     pictures = associated(MissionReportFile, 'pictures', 'one-to-many')
@@ -79,6 +81,8 @@ class MissionReportVehicle(Base, ContentMixin, HiddenFromPublicExtension):
 
     #: a website describing the vehicle
     website = Column(Text, nullable=True)
+
+    uses = relationship('MissionReportVehicleUse')
 
     @property
     def title(self):

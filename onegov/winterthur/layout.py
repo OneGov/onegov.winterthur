@@ -1,11 +1,12 @@
 from cached_property import cached_property
 from onegov.org.layout import DefaultLayout
-from onegov.core.elements import Link, LinkGroup, Intercooler
+from onegov.core.elements import Link, LinkGroup, Intercooler, Confirm, Block
 from onegov.winterthur import _
 from onegov.winterthur.collections import AddressCollection
 from onegov.winterthur.collections import MissionReportCollection
 from onegov.winterthur.collections import MissionReportVehicleCollection
 from onegov.winterthur.models import MissionReport
+from onegov.winterthur.models import MissionReportVehicle
 from onegov.winterthur.roadwork import RoadworkCollection
 
 
@@ -148,5 +149,76 @@ class MissionReportLayout(DefaultLayout):
                     _("Edit"),
                     self.request.link(self.model, name='edit'),
                     attrs={'class': 'edit-link'}
+                ),
+                Link(
+                    _("Delete"),
+                    self.csrf_protected_url(
+                        self.request.link(self.model)
+                    ),
+                    attrs={'class': 'delete-link'},
+                    traits=(
+                        Confirm(
+                            _(
+                                "Do you really want to delete "
+                                "this mission report?"
+                            ),
+                            _("This cannot be undone."),
+                            _("Delete mission report"),
+                            _("Cancel")
+                        ),
+                        Intercooler(
+                            request_method='DELETE',
+                            redirect_after=self.request.class_link(
+                                MissionReportCollection
+                            )
+                        )
+                    )
                 )
             ]
+
+        if isinstance(self.model, MissionReportVehicle):
+            if self.model.uses:
+                return [
+                    Link(
+                        _("Delete"),
+                        '#',
+                        attrs={'class': 'delete-link'},
+                        traits=(
+                            Block(
+                                _("This vehicle can't be deleted."),
+                                _(
+                                    "There are mission reports associated "
+                                    "with this vehicle."
+                                ),
+                                _("Cancel")
+                            ),
+                        )
+                    )
+                ]
+            else:
+                return [
+                    Link(
+                        _("Delete"),
+                        self.csrf_protected_url(
+                            self.request.link(self.model)
+                        ),
+                        attrs={'class': 'delete-link'},
+                        traits=(
+                            Confirm(
+                                _(
+                                    "Do you really want to delete "
+                                    "this vehicle?"
+                                ),
+                                _("This cannot be undone."),
+                                _("Delete vehicle"),
+                                _("Cancel")
+                            ),
+                            Intercooler(
+                                request_method='DELETE',
+                                redirect_after=self.request.class_link(
+                                    MissionReportVehicleCollection
+                                )
+                            )
+                        )
+                    )
+                ]

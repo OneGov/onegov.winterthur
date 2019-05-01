@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE 1.0\n"
-"POT-Creation-Date: 2019-05-01 14:11+0200\n"
+"POT-Creation-Date: 2019-05-01 17:42+0200\n"
 "PO-Revision-Date: 2017-03-02 09:52+0100\n"
 "Last-Translator: Denis Krienbühl <denis.krienbuehl@seantis.ch>\n"
 "Language-Team: German\n"
@@ -34,14 +34,41 @@ msgstr "Fahrzeuge"
 msgid "Edit"
 msgstr "Bearbeiten"
 
+msgid "Delete"
+msgstr "Löschen"
+
 msgid "Add"
 msgstr "Hinzufügen"
+
+msgid "Do you really want to delete this mission report?"
+msgstr "Möchten Sie den Einsatzbericht wirklich löschen?"
+
+msgid "This cannot be undone."
+msgstr "Dies kann nicht rückgängig gemacht werden."
+
+msgid "Delete mission report"
+msgstr "Einsatzbericht löschen"
+
+msgid "Cancel"
+msgstr "Abbrechen"
 
 msgid "Mission Report"
 msgstr "Einsatzbericht"
 
 msgid "Vehicle"
 msgstr "Fahrzeug"
+
+msgid "This vehicle can't be deleted."
+msgstr "Dieses Fahrzeug kann nicht gelöscht werden."
+
+msgid "There are mission reports associated with this vehicle."
+msgstr "Es bestehen Einsatzberichte welche mit diesem Fahrzeug verknüpft sind."
+
+msgid "Do you really want to delete this vehicle?"
+msgstr "Möchten Sie dieses Fahrzeug wirklich löschen?"
+
+msgid "Delete vehicle"
+msgstr "Fahrzeug löschen?"
 
 msgid "Hide from the public"
 msgstr "Verbergen"
@@ -146,6 +173,9 @@ msgstr "Ja"
 msgid "No"
 msgstr "Nein"
 
+msgid "None"
+msgstr "Keine"
+
 msgid "Failed to connect to Projektdatenbank."
 msgstr "Keine Verbindung zu Projektdatenbank."
 
@@ -193,6 +223,9 @@ msgstr "Das Fahrzeug wurde hinzugefügt"
 
 msgid "New"
 msgstr "Neu"
+
+msgid "Count"
+msgstr "Anzahl"
 
 msgid "Connection Error"
 msgstr "Verbindungsfehler"

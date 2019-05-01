@@ -64,7 +64,7 @@ def mission_report_form(model, request):
     vehicles = {v.id: v for v in vehicles if not v.is_hidden_from_public}
 
     # include hidden vehicles that were picked before being hidden
-    for used in model.used_vehicles:
+    for used in report.used_vehicles:
         if used.vehicle_id not in vehicles:
             vehicles[used.vehicle_id] = used.vehicle
 
@@ -149,7 +149,7 @@ def view_mission_report_vehicles(self, request):
             Link(_("Vehicles"), request.link(self))
         ),
         'title': _("Vehicles"),
-        'vehicles': self.query(),
+        'vehicles': tuple(self.query()),
     }
 
 
@@ -211,6 +211,15 @@ def handle_edit_mission_report(self, request, form):
     }
 
 
+@WinterthurApp.view(
+    model=MissionReport,
+    permission=Private,
+    request_method='DELETE')
+def delete_mission_report(self, request):
+    request.assert_valid_csrf_token()
+    request.session.delete(self)
+
+
 @WinterthurApp.form(
     model=MissionReportVehicleCollection,
     permission=Private,
@@ -264,13 +273,21 @@ def handle_edit_vehicle(self, request, form):
         form.process(obj=self)
 
     return {
-        'title': _("Vehicle"),
+        'title': self.title,
         'form': form,
         'layout': MissionReportLayout(
             self, request,
             Link(_("Vehicles"), request.class_link(
                 MissionReportVehicleCollection)),
-            Link(self.title, request.link(self)),
-            Link(_("Edit"), '#', editbar=False),
+            Link(self.title, '#')
         )
     }
+
+
+@WinterthurApp.view(
+    model=MissionReportVehicle,
+    permission=Private,
+    request_method='DELETE')
+def delete_mission_report_vehicle(self, request):
+    request.assert_valid_csrf_token()
+    request.session.delete(self)
