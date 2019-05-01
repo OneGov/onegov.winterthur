@@ -1,3 +1,4 @@
+from onegov.file.utils import IMAGE_MIME_TYPES_AND_SVG
 from onegov.form import Form
 from onegov.form.fields import TimezoneDateTimeField
 from onegov.form.fields import UploadFileWithORMSupport
@@ -63,14 +64,9 @@ class MissionReportVehicleForm(Form):
         file_class=MissionReportFile,
         validators=[
             Optional(),
-            WhitelistedMimeType({
-                'image/gif',
-                'image/jpeg',
-                'image/png'
-            }),
+            WhitelistedMimeType(IMAGE_MIME_TYPES_AND_SVG),
             FileSizeLimit(1 * 1024 * 1024)
         ])
 
     website = URLField(
-        _("Website"),
-        validators=[InputRequired()])
+        _("Website"))

@@ -45,3 +45,6 @@ class MissionReportVehicleCollection(GenericCollection):
     @property
     def model_class(self):
         return MissionReportVehicle
+
+    def query(self):
+        return super().query().order_by(MissionReportVehicle.name)

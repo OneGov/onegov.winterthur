@@ -7,7 +7,7 @@
             <p i18n:translate="">No mission reports found.</p>
         </div>
 
-        <table condition="reports" style="width: 100%;">
+        <table tal:condition="reports" style="width: 100%;" class="valign-top responsive">
             <thead>
                 <tr>
                     <th class="min-width-column" i18n:translate>Date</th>
@@ -20,14 +20,31 @@
             </thead>
             <tbody>
                 <tr tal:repeat="report reports">
-                    <td>${report.date.strftime('%d.%m.%Y')}</td>
-                    <td>${report.date.strftime('%H:%M')}</td>
-                    <td>${report.readable_duration}</td>
-                    <td>
-                        <a href="${request.link(report)}">${report.nature}</a>
+                    <td data-label="Date" i18n:attributes="data-label" class="min-width-column">
+                        ${report.date.strftime('%d.%m.%Y')}
                     </td>
-                    <td>${report.location}</td>
-                    <td>${report.personnel} / ${report.backup}</td>
+                    <td data-label="Alarm" i18n:attributes="data-label" class="min-width-column">
+                        ${report.date.strftime('%H:%M')}
+                    </td>
+                    <td data-label="Duration" i18n:attributes="data-label" class="min-width-column">
+                        ${report.readable_duration}
+                    </td>
+                    <td data-label="Mission nature" i18n:attributes="data-label">
+                        <div><a href="${request.link(report)}">${report.nature}</a></div>
+                        <ul class="used-vehicles" tal:condition="report.used_vehicles">
+                            <tal:b repeat="use python: sorted(report.used_vehicles, key=lambda u: u.vehicle.name)">
+                                <li tal:repeat="n range(0, max(min(use.count, 10), 1))">
+                                    <img src="${request.link(use.vehicle.symbol)}">
+                                </li>
+                            </tal:b>
+                        </ul>
+                    </td>
+                    <td data-label="Location" i18n:attributes="data-label" class="min-width-column">
+                        ${report.location}
+                    </td>
+                    <td data-label="Pers*" i18n:attributes="data-label" class="min-width-column">
+                        ${report.personnel} / ${report.backup}
+                    </td>
                 </tr>
             </tbody>
         </table>

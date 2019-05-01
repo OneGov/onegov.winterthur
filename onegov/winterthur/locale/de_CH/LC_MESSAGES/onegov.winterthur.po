@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE 1.0\n"
-"POT-Creation-Date: 2019-04-30 16:27+0200\n"
+"POT-Creation-Date: 2019-05-01 14:11+0200\n"
 "PO-Revision-Date: 2017-03-02 09:52+0100\n"
 "Last-Translator: Denis Krienbühl <denis.krienbuehl@seantis.ch>\n"
 "Language-Team: German\n"
@@ -42,6 +42,16 @@ msgstr "Einsatzbericht"
 
 msgid "Vehicle"
 msgstr "Fahrzeug"
+
+msgid "Hide from the public"
+msgstr "Verbergen"
+
+msgid ""
+"This site is hidden from the general public. To show it to everyone, edit "
+"this page and disable \"Hide from public\"."
+msgstr ""
+"Diese Seite ist nicht öffentlich. Bearbeiten Sie diese Seite und entfernen "
+"Sie das Häckchen im Feld \"Verbergen\"."
 
 msgid "Date"
 msgstr "Datum"
@@ -162,6 +172,15 @@ msgstr "Quartier"
 
 msgid "No vehicles found."
 msgstr "Keine Fahrzeuge gefunden."
+
+msgid "Status"
+msgstr "Status"
+
+msgid "Hidden"
+msgstr "Verborgen"
+
+msgid "Visible"
+msgstr "Sichtbar"
 
 msgid "Successfully added a mission report"
 msgstr "Der Einsatzbericht wurde hinzugefügt"
