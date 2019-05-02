@@ -2,6 +2,7 @@ from onegov.winterthur.app import WinterthurApp
 from onegov.winterthur.collections import AddressCollection
 from onegov.winterthur.collections import AddressSubsetCollection
 from onegov.winterthur.collections import MissionReportCollection
+from onegov.winterthur.collections import MissionReportFileCollection
 from onegov.winterthur.collections import MissionReportVehicleCollection
 from onegov.winterthur.models import MissionReport
 from onegov.winterthur.models import MissionReportVehicle
@@ -60,6 +61,17 @@ def get_mission_report_vehicles(request):
     converters=dict(id=UUID))
 def get_mission_report(request, id):
     return get_mission_reports(request).by_id(id)
+
+
+@WinterthurApp.path(
+    model=MissionReportFileCollection,
+    path='/mission-reports/report/{id}/images',
+    converters=dict(id=UUID))
+def get_mission_report_files(request, id):
+    report = get_mission_report(request, id)
+
+    if report:
+        return MissionReportFileCollection(request.session, report)
 
 
 @WinterthurApp.path(

@@ -1,8 +1,10 @@
 from onegov.core.elements import Link
 from onegov.core.security import Public, Private
 from onegov.form import FieldDependency, WTFormsClassBuilder, move_fields
+from onegov.org.views.files import view_get_image_collection
 from onegov.winterthur import WinterthurApp, _
 from onegov.winterthur.collections import MissionReportCollection
+from onegov.winterthur.collections import MissionReportFileCollection
 from onegov.winterthur.collections import MissionReportVehicleCollection
 from onegov.winterthur.forms import MissionReportForm
 from onegov.winterthur.forms import MissionReportVehicleForm
@@ -151,6 +153,19 @@ def view_mission_report_vehicles(self, request):
         'title': _("Vehicles"),
         'vehicles': tuple(self.query()),
     }
+
+
+@WinterthurApp.html(model=MissionReportFileCollection, template='images.pt',
+                    permission=Private)
+def view_mission_report_files(self, request):
+    data = view_get_image_collection(self, request)
+    data['layout'] = MissionReportLayout(
+        self, request,
+        Link(self.report.title, request.link(self.report)),
+        Link(_("Images"), '#', editbar=False)
+    )
+
+    return data
 
 
 @WinterthurApp.form(

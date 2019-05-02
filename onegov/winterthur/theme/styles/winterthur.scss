@@ -363,6 +363,15 @@ input[data-street-search]::placeholder {
     }
 }
 
+table.two-column {
+    td:first-child {
+        font-weight: bold;
+    }
+    td, tr {
+        border: 0;
+    }
+}
+
 table.responsive {
     @media #{$small-only} {
         thead {
@@ -430,4 +439,18 @@ img.civil-defence-icon {
     li:last-child {
         margin-right: 0;
     }
+}
+
+/*
+    Mission report images
+*/
+
+.mission-report-layout .orbit-container {
+    width: calc(100% - 2vw);
+    margin: 0 auto;
+}
+
+.mission-report-layout .slider,
+.mission-report-layout .slider li {
+    height: 45vw !important;
 }

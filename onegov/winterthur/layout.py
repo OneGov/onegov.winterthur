@@ -4,6 +4,7 @@ from onegov.core.elements import Link, LinkGroup, Intercooler, Confirm, Block
 from onegov.winterthur import _
 from onegov.winterthur.collections import AddressCollection
 from onegov.winterthur.collections import MissionReportCollection
+from onegov.winterthur.collections import MissionReportFileCollection
 from onegov.winterthur.collections import MissionReportVehicleCollection
 from onegov.winterthur.models import MissionReport
 from onegov.winterthur.models import MissionReportVehicle
@@ -92,6 +93,24 @@ class MissionReportLayout(DefaultLayout):
     @cached_property
     def breadcrumbs(self):
         return list(self.breadcrumbs_iter())
+
+    @cached_property
+    def image_upload_url(self):
+
+        url = self.request.link(
+            MissionReportFileCollection(
+                self.request.session, self.model.report), name='upload')
+
+        return self.csrf_protected_url(url)
+
+    @cached_property
+    def image_upload_json_url(self):
+
+        url = self.request.link(
+            MissionReportFileCollection(
+                self.request.session, self.model.report), name='upload.json')
+
+        return self.csrf_protected_url(url)
 
     @cached_property
     def editbar_links(self):
