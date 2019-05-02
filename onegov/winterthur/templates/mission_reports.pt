@@ -39,7 +39,11 @@
                         ${report.location}
                     </td>
                     <td data-label="Pers*" i18n:attributes="data-label" class="min-width-column">
-                        ${report.personnel} / ${report.backup}
+                        <div>${report.personnel} / ${report.backup}</div>
+                        <img i18n:attributes="title" title="Civil Defence involvement"
+                             tal:condition="report.civil_defence"
+                             src="${request.link(request.app.static_file('civil-defence.svg'))}"
+                             class="civil-defence-icon">
                     </td>
                 </tr>
             </tbody>

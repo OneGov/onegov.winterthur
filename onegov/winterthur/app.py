@@ -2,19 +2,22 @@ import re
 
 from cached_property import cached_property
 from onegov.core import utils
+from onegov.core.static import StaticFile
 from onegov.org import OrgApp
-from onegov.org.app import get_i18n_localedirs as get_org_i18n_localedirs
 from onegov.org.app import get_common_asset as default_common_asset
+from onegov.org.app import get_i18n_localedirs as get_org_i18n_localedirs
 from onegov.winterthur.initial_content import create_new_organisation
-from onegov.winterthur.theme import WinterthurTheme
-from onegov.winterthur.roadwork import RoadworkConfig
 from onegov.winterthur.roadwork import RoadworkClient
+from onegov.winterthur.roadwork import RoadworkConfig
+from onegov.winterthur.theme import WinterthurTheme
 
 
 class WinterthurApp(OrgApp):
 
     #: the version of this application (do not change manually!)
     version = '0.4.4'
+
+    serve_static_files = True
 
     frame_ancestors = {
         'https://winterthur.ch',
@@ -48,6 +51,9 @@ class WinterthurApp(OrgApp):
             password=config.password
         )
 
+    def static_file(self, path):
+        return StaticFile(path, version=self.version)
+
 
 @WinterthurApp.tween_factory()
 def enable_iframes_tween_factory(app, handler):
@@ -75,6 +81,11 @@ def enable_iframes_tween_factory(app, handler):
 @WinterthurApp.template_directory()
 def get_template_directory():
     return 'templates'
+
+
+@OrgApp.static_directory()
+def get_static_directory():
+    return 'static'
 
 
 @WinterthurApp.setting(section='core', name='theme')
