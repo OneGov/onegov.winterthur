@@ -139,7 +139,7 @@ def view_mission(self, request):
 
 @WinterthurApp.html(
     model=MissionReportVehicleCollection,
-    permission=Public,
+    permission=Private,
     template='mission_report_vehicles.pt')
 def view_mission_report_vehicles(self, request):
 

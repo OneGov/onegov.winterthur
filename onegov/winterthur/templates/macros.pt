@@ -70,7 +70,7 @@
         <tal:b repeat="use python: sorted(used_vehicles, key=lambda u: u.vehicle.name)">
             <li tal:repeat="n range(0, max(min(use.count, 10), 1))">
                 <a tal:attributes="href use.vehicle.website or None">
-                    <img class="vehicle-icon" src="${request.link(use.vehicle.symbol)}">
+                    <img title="${use.vehicle.title}" class="vehicle-icon" src="${request.link(use.vehicle.symbol)}">
                 </a>
             </li>
         </tal:b>
