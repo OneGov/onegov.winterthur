@@ -33,7 +33,7 @@
                         </a>
                     </td>
                     <td>
-                        <img clas="vehicle-icon" src="${request.link(vehicle.symbol)}">
+                        <metal:b use-macro="layout.macros.vehicle_icon" />
                     </td>
                     <td>
                         <tal:b condition="vehicle.is_hidden_from_public" i18n:translate>

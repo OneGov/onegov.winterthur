@@ -431,12 +431,13 @@ table.responsive {
 /*
     Vehicles
 */
-img.vehicle-icon {
+.vehicle-icon {
+    color: $body-font-color !important;
     max-height: 50px;
     max-width: 50px;
 }
 
-img.civil-defence-icon {
+.civil-defence-icon {
     margin-top: 5px;
     max-height: 22px;
     max-width: 22px;
