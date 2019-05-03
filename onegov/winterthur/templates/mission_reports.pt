@@ -7,53 +7,55 @@
             <p i18n:translate="">No mission reports found.</p>
         </div>
 
-        <table tal:condition="reports" style="width: 100%;" class="valign-top responsive">
-            <thead>
-                <tr>
-                    <th class="min-width-column" i18n:translate>Date</th>
-                    <th class="min-width-column" i18n:translate>Alarm</th>
-                    <th class="min-width-column" i18n:translate>Duration</th>
-                    <th i18n:translate>Mission nature</th>
-                    <th class="min-width-column" i18n:translate>Location</th>
-                    <th class="min-width-column" i18n:translate>Pers*</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr tal:repeat="report reports">
-                    <td data-label="Date" i18n:attributes="data-label" class="min-width-column">
-                        ${report.date.strftime('%d.%m.%Y')}
-                    </td>
-                    <td data-label="Alarm" i18n:attributes="data-label" class="min-width-column">
-                        ${report.date.strftime('%H:%M')}
-                    </td>
-                    <td data-label="Duration" i18n:attributes="data-label" class="min-width-column">
-                        ${report.readable_duration}
-                    </td>
-                    <td data-label="Mission nature" i18n:attributes="data-label">
-                        <div><a href="${request.link(report)}">${report.nature}</a></div>
-                        <tal:b define="used_vehicles report.used_vehicles" condition="report.used_vehicles">
-                            <metal:b use-macro="layout.macros.used_vehicles" />
-                        </tal:b>
-                    </td>
-                    <td data-label="Location" i18n:attributes="data-label" class="min-width-column">
-                        ${report.location}
-                    </td>
-                    <td data-label="Pers*" i18n:attributes="data-label" class="min-width-column">
-                        <div>${report.personnel} / ${report.backup}</div>
-                        <img i18n:attributes="title" title="Civil Defence involvement"
-                             tal:condition="report.civil_defence"
-                             src="${request.link(request.app.static_file('civil-defence.svg'))}"
-                             class="civil-defence-icon">
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+        <tal:b condition="reports">
+            <div class="total-missions"><span i18n:translate>Total missions in <tal:b i18n:name="year">${year}</tal:b></span>: <b>${count}</b></div>
 
-        <div tal:condition="reports">
+            <table style="width: 100%;" class="valign-top responsive">
+                <thead>
+                    <tr>
+                        <th class="min-width-column" i18n:translate>Date</th>
+                        <th class="min-width-column" i18n:translate>Alarm</th>
+                        <th class="min-width-column" i18n:translate>Duration</th>
+                        <th i18n:translate>Mission nature</th>
+                        <th class="min-width-column" i18n:translate>Location</th>
+                        <th class="min-width-column" i18n:translate>Pers*</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr tal:repeat="report reports">
+                        <td data-label="Date" i18n:attributes="data-label" class="min-width-column">
+                            ${report.date.strftime('%d.%m.%Y')}
+                        </td>
+                        <td data-label="Alarm" i18n:attributes="data-label" class="min-width-column">
+                            ${report.date.strftime('%H:%M')}
+                        </td>
+                        <td data-label="Duration" i18n:attributes="data-label" class="min-width-column">
+                            ${report.readable_duration}
+                        </td>
+                        <td data-label="Mission nature" i18n:attributes="data-label">
+                            <div><a href="${request.link(report)}">${report.nature}</a></div>
+                            <tal:b define="used_vehicles report.used_vehicles" condition="report.used_vehicles">
+                                <metal:b use-macro="layout.macros.used_vehicles" />
+                            </tal:b>
+                        </td>
+                        <td data-label="Location" i18n:attributes="data-label" class="min-width-column">
+                            ${report.location}
+                        </td>
+                        <td data-label="Pers*" i18n:attributes="data-label" class="min-width-column">
+                            <div>${report.personnel} / ${report.backup}</div>
+                            <img i18n:attributes="title" title="Civil Defence involvement"
+                                 tal:condition="report.civil_defence"
+                                 src="${request.link(request.app.static_file('civil-defence.svg'))}"
+                                 class="civil-defence-icon">
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
             <div class="pagination-centered">
                 <metal:b use-macro="layout.macros['pagination']" tal:define="
                     collection layout.model; current_page layout.model;" />
             </div>
-        </div>
+        </tal:b>
     </tal:b>
 </div>

@@ -97,6 +97,9 @@ class MissionReportLayout(DefaultLayout):
     @cached_property
     def image_upload_url(self):
 
+        if not hasattr(self.model, 'report'):
+            return super().image_upload_url
+
         url = self.request.link(
             MissionReportFileCollection(
                 self.request.session, self.model.report), name='upload')
@@ -105,6 +108,9 @@ class MissionReportLayout(DefaultLayout):
 
     @cached_property
     def image_upload_json_url(self):
+
+        if not hasattr(self.model, 'report'):
+            return super().image_upload_json_url
 
         url = self.request.link(
             MissionReportFileCollection(
@@ -164,6 +170,11 @@ class MissionReportLayout(DefaultLayout):
 
         if isinstance(self.model, MissionReport):
             return [
+                Link(
+                    _("Images"),
+                    self.request.link(self.model, name='images'),
+                    attrs={'class': 'upload-images'}
+                ),
                 Link(
                     _("Edit"),
                     self.request.link(self.model, name='edit'),

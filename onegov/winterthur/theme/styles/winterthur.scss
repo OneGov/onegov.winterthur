@@ -45,6 +45,10 @@ input[data-street-search]::placeholder {
     .new-vehicle::before {
         @include icon('\f0f9');
     }
+
+    .upload-images::before {
+        @include icon('\f083');
+    }
 }
 
 /*
@@ -349,6 +353,17 @@ input[data-street-search]::placeholder {
 }
 
 /*
+    Mission report list
+*/
+
+.total-missions {
+    @include label($text-size: .875rem, $bg: $gray-pastel, $radius: true);
+
+    font-size: .875rem;
+    margin-bottom: 1rem;
+}
+
+/*
     Tables
 */
 .min-width-column {
@@ -367,7 +382,9 @@ table.two-column {
     td:first-child {
         font-weight: bold;
     }
-    td, tr {
+
+    td,
+    tr {
         border: 0;
     }
 }

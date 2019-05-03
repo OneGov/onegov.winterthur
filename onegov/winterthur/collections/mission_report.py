@@ -1,9 +1,12 @@
+import sedate
+
+from datetime import datetime
 from onegov.core.collection import GenericCollection, Pagination
 from onegov.org.models.file import ImageFileCollection
 from onegov.winterthur.models import MissionReport
 from onegov.winterthur.models import MissionReportFile
 from onegov.winterthur.models import MissionReportVehicle
-from sqlalchemy import or_
+from sqlalchemy import and_, or_
 
 
 class MissionReportFileCollection(ImageFileCollection):
@@ -75,6 +78,16 @@ class MissionReportCollection(GenericCollection, Pagination):
 
     def page_by_index(self, index):
         return self.__class__(self.session, page=index)
+
+    def mission_count(self, year):
+        timezone = 'Europe/Zurich'
+
+        start = sedate.replace_timezone(datetime(year, 1, 1), timezone)
+        end = sedate.replace_timezone(datetime(year + 1, 1, 1), timezone)
+
+        return self.query().filter(and_(
+            start <= MissionReport.date, MissionReport.date < end
+        )).count()
 
 
 class MissionReportVehicleCollection(GenericCollection):
