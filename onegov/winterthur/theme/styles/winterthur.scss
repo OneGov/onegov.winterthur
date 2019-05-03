@@ -462,13 +462,29 @@ table.responsive {
 /*
     Mission report images
 */
-
 .mission-report-layout .orbit-container {
-    width: calc(100% - 2vw);
     margin: 0 auto;
+    width: calc(100% - 2vw);
 }
 
 .mission-report-layout .slider,
 .mission-report-layout .slider li {
     height: 45vw !important;
+}
+
+/*
+    Mission reports legend
+*/
+.mission-report-legend {
+    background: $gray-pastel;
+    padding: 1rem 1rem .5rem;
+
+    * {
+        font-size: .8rem;
+    }
+
+    p {
+        margin-bottom: .5rem;
+        max-width: $max-line-width;
+    }
 }

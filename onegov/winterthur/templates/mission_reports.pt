@@ -56,6 +56,26 @@
                 <metal:b use-macro="layout.macros['pagination']" tal:define="
                     collection layout.model; current_page layout.model;" />
             </div>
+
+            <div class="mission-report-legend">
+                <h2 i18n:translate>* Legend Personnel</h2>
+
+                <!--! quite specific content which might become dynamic, therefore not translated -->
+                <tal:b>
+                    <p>
+                        <b>1. Zahl</b><br>
+                        Direkt am Einsatz beteiligte Angehörige der Feuerwehr.
+                    </p>
+                    <p>
+                        <b>2. Zahl</b><br>
+                        Angehörige der Feuerwehr zur Sicherstellung der Einsatzbereitschaft auf der Wache.
+                    </p>
+                    <p>
+                        <b>Internationales Schutzzeichen Zivilschutz</b><br>
+                        An diesem Einsatz waren zusätzlich Angehörige der Zivilschutzorganisation Winterthur und Umgebung beteiligt.
+                    </p>
+                </tal:b>
+            </div>
         </tal:b>
     </tal:b>
 </div>
