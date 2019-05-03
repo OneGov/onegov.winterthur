@@ -237,6 +237,7 @@ def handle_edit_mission_report(self, request, form):
 def delete_mission_report(self, request):
     request.assert_valid_csrf_token()
     request.session.delete(self)
+    request.success(_("Successfully deleted mission report"))
 
 
 @WinterthurApp.form(
@@ -310,3 +311,4 @@ def handle_edit_vehicle(self, request, form):
 def delete_mission_report_vehicle(self, request):
     request.assert_valid_csrf_token()
     request.session.delete(self)
+    request.success(_("Successfully deleted vehicle"))

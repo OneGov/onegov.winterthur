@@ -19,7 +19,7 @@
             </thead>
             <tbody>
                 <tr tal:repeat="vehicle vehicles">
-                    <td>
+                    <td class="min-width-column">
                         ${vehicle.name}
                     </td>
                     <td>

@@ -355,7 +355,6 @@ input[data-street-search]::placeholder {
 /*
     Mission report list
 */
-
 .total-missions {
     @include label($text-size: .875rem, $bg: $gray-pastel, $radius: true);
 

@@ -6,7 +6,7 @@ from onegov.org.models.file import ImageFileCollection
 from onegov.winterthur.models import MissionReport
 from onegov.winterthur.models import MissionReportFile
 from onegov.winterthur.models import MissionReportVehicle
-from sqlalchemy import and_, or_
+from sqlalchemy import and_, or_, desc
 
 
 class MissionReportFileCollection(ImageFileCollection):
@@ -67,7 +67,7 @@ class MissionReportCollection(GenericCollection, Pagination):
                 MissionReport.meta['is_hidden_from_public'] == None
             ))
 
-        return query
+        return query.order_by(desc(MissionReport.date))
 
     def subset(self):
         return self.query()

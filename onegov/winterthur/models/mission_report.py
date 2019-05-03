@@ -56,7 +56,7 @@ class MissionReport(Base, ContentMixin, HiddenFromPublicExtension):
 
     @property
     def title(self):
-        return self.nature.split(':', 1)[0]
+        return self.nature
 
     @property
     def readable_duration(self):
@@ -90,7 +90,8 @@ class MissionReportVehicle(Base, ContentMixin, HiddenFromPublicExtension):
 
     @property
     def readable_website(self):
-        return self.website.replace('https://', '').replace('http://', '')
+        if self.website:
+            return self.website.replace('https://', '').replace('http://', '')
 
 
 class MissionReportVehicleUse(Base):
