@@ -139,7 +139,7 @@ def view_mission(self, request):
             self, request,
             Link(self.title, '#')
         ),
-        'model': self,
+        'model': self
     }
 
 

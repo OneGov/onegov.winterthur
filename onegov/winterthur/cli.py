@@ -5,7 +5,6 @@ from datetime import datetime
 from onegov.core.cli import command_group
 from onegov.core.csv import CSVFile
 from onegov.winterthur.models import MissionReport
-from onegov.winterthur.models import MissionReportFile
 from onegov.winterthur.models import MissionReportVehicle
 from onegov.winterthur.models import MissionReportVehicleUse
 

@@ -265,15 +265,11 @@ input[data-street-search]::placeholder {
 
     .globals,
     .header,
-    .locals,
+    .main-navigation,
     .main-title,
-    .push,
+    nav,
     footer {
         display: none;
-    }
-
-    .directory-back-button {
-        display: block !important;
     }
 
     &.directory-entry-layout .main-title {
@@ -288,6 +284,26 @@ input[data-street-search]::placeholder {
 
         > .columns {
             padding: 0;
+        }
+    }
+
+    .alerts > .columns {
+        padding: 0;
+    }
+
+    .sub-navigation {
+        > .columns {
+            margin-bottom: .75rem;
+            padding: 0;
+        }
+
+        .edit-bar,
+        .edit-bar .button {
+            background: $gray-pastel;
+        }
+
+        .edit-bar .button:hover {
+            background: $primary-color;
         }
     }
 }

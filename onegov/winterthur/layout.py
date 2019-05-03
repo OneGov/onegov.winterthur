@@ -76,8 +76,8 @@ class MissionReportLayout(DefaultLayout):
 
     def __init__(self, model, request, *suffixes):
         self.suffixes = suffixes
-
         super().__init__(model, request)
+        request.include('iframe-enhancements')
 
     def breadcrumbs_iter(self):
         yield Link(

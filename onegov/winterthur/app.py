@@ -21,8 +21,13 @@ class WinterthurApp(OrgApp):
 
     frame_ancestors = {
         'https://winterthur.ch',
-        'https://*.winterthur.ch'
+        'https://*.winterthur.ch',
+        'http://localhost:8000',
     }
+
+    # disable same site cookie protection as we need to run inside iframes
+    # with cookies enabled
+    same_site_cookie_policy = None
 
     def configure_organisation(self, **cfg):
         cfg.setdefault('enable_user_registration', False)
@@ -60,7 +65,8 @@ def enable_iframes_tween_factory(app, handler):
     iframe_paths = (
         r'/streets.*',
         r'/director(y|ies|y-submission/.*)',
-        r'/ticket/.*'
+        r'/ticket/.*',
+        r'/mission-report.*',
     )
 
     iframe_paths = re.compile(rf"({'|'.join(iframe_paths)})")
@@ -130,6 +136,11 @@ def get_search_asset():
 def get_iframe_resizer():
     yield 'iframe-resizer-options.js'
     yield 'iframe-resizer-contentwindow.js'
+
+
+@WinterthurApp.webasset('iframe-enhancements')
+def get_iframe_enhancements():
+    yield 'iframe-enhancements.js'
 
 
 @WinterthurApp.webasset('common')
