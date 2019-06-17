@@ -2,16 +2,16 @@ import textwrap
 
 from onegov.core.security import Secret
 from onegov.directory import Directory, DirectoryCollection
-from onegov.feriennet import _
 from onegov.form import Form
 from onegov.org.models import Organisation
 from onegov.org.views.settings import handle_generic_settings
+from onegov.winterthur import _
 from onegov.winterthur.app import WinterthurApp
-from yaml import safe_load
-from yaml.error import YAMLError
 from wtforms.fields import RadioField, TextAreaField
 from wtforms.fields.html5 import DecimalField
 from wtforms.validators import InputRequired, ValidationError
+from yaml import safe_load
+from yaml.error import YAMLError
 
 
 class WinterthurDaycareSettingsForm(Form):
