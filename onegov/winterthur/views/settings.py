@@ -7,10 +7,10 @@ from onegov.org.models import Organisation
 from onegov.org.views.settings import handle_generic_settings
 from onegov.winterthur import _
 from onegov.winterthur.app import WinterthurApp
+from onegov.winterthur.daycare import Services
 from wtforms.fields import RadioField, TextAreaField
 from wtforms.fields.html5 import DecimalField
 from wtforms.validators import InputRequired, ValidationError
-from yaml import safe_load
 from yaml.error import YAMLError
 
 
@@ -64,7 +64,7 @@ class WinterthurDaycareSettingsForm(Form):
         places=2,
         validators=[InputRequired()])
 
-    coverage = TextAreaField(
+    services = TextAreaField(
         fieldset=_("Variables"),
         validators=[InputRequired()],
         render_kw={'rows': 32, 'data-editor': 'yaml'})
@@ -77,15 +77,18 @@ class WinterthurDaycareSettingsForm(Form):
 
     def populate_obj(self, obj, *args, **kwargs):
         super().populate_obj(obj, *args, **kwargs)
-        obj.meta['daycare_settings'] = self.data
+        obj.meta['daycare_settings'] = {
+            k: v for k, v in self.data.items() if k != 'csrf_token'
+        }
 
     def process_obj(self, obj):
         super().process_obj(obj)
         for k, v in obj.meta.get('daycare_settings', {}).items():
-            getattr(self, k).data = v
+            if hasattr(self, k):
+                getattr(self, k).data = v
 
-        if not self.coverage.data.strip():
-            self.coverage.data = textwrap.dedent("""
+        if not self.services.data or not self.services.data.strip():
+            self.services.data = textwrap.dedent("""
                 # Beispiel:
                 #
                 # - titel: "Ganzer Tag inkl. Mitagessen"
@@ -93,14 +96,14 @@ class WinterthurDaycareSettingsForm(Form):
                 #   prozent: 100.00
             """)
 
-    def validate_coverage(self, field):
+    def validate_services(self, field):
         try:
-            safe_load(field.data)
-        except YAMLError:
-            raise ValidationError(_("Invalid yaml input"))
+            tuple(Services.parse_definition(field.data))
+        except (YAMLError, TypeError, KeyError):
+            raise ValidationError(_("Invalid services configuration"))
 
     def directory_choices(self):
-        dirs = DirectoryCollection(self.request.session)
+        dirs = DirectoryCollection(self.request.session, type='extended')
 
         def choice(directory):
             return (
@@ -120,4 +123,4 @@ class WinterthurDaycareSettingsForm(Form):
                     form=WinterthurDaycareSettingsForm, setting=_("Daycare"),
                     icon='fa-child')
 def custom_handle_settings(self, request, form):
-    return handle_generic_settings(self, request, form, _("Feriennet"))
+    return handle_generic_settings(self, request, form, _("Daycare Settings"))
