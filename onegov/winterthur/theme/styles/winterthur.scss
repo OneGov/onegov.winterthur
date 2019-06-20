@@ -523,3 +523,41 @@ table.responsive {
         max-width: $max-line-width;
     }
 }
+
+/*
+    Daycare calculator
+*/
+.daycare-calculator {
+    form {
+        max-width: 600px;
+    }
+
+    .daycare-services {
+        width: 100%;
+
+        thead th {
+            vertical-align: top;
+        }
+
+        td,
+        tr {
+            padding: 0;
+        }
+
+        label {
+            cursor: pointer;
+            display: flex;
+            height: 1.5rem;
+            justify-content: center;
+        }
+
+        @media #{$small-only} {
+            & {
+                th {
+                    font-size: .7rem;
+                    padding: .5rem;
+                }
+            }
+        }
+    }
+}

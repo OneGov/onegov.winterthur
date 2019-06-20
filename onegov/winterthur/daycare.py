@@ -15,8 +15,9 @@ from onegov.form import Form
 from onegov.org.models import Organisation
 from onegov.winterthur import _
 from ordered_set import OrderedSet
-from wtforms.fields import Field
-from wtforms.validators import InputRequired, ValidationError
+from wtforms.fields import Field, BooleanField
+from wtforms.fields.html5 import DecimalField
+from wtforms.validators import NumberRange, InputRequired, ValidationError
 from wtforms.widgets.core import HTMLString
 
 
@@ -31,13 +32,13 @@ SERVICE_DAYS = {
 }
 
 SERVICE_DAYS_LABELS = {
-    0: "Montag",
-    1: "Dienstag",
-    2: "Mittwoch",
-    3: "Donnerstag",
-    4: "Freitag",
-    5: "Samstag",
-    6: "Sonntag",
+    0: _("Monday"),
+    1: _("Tuesday"),
+    2: _("Wednesday"),
+    3: _("Thursday"),
+    4: _("Friday"),
+    5: _("Saturday"),
+    6: _("Sunday"),
 }
 
 
@@ -268,6 +269,13 @@ class DaycareSubsidyCalculator(object):
 
         :param rebate:
             True if a rebate is applied
+
+        Note, due to the specific nature of the content here, which is probably
+        not going to be translated, we use German. For consistency we want to
+        limit this, but with Winterthur these kinds of things crop up as the
+        wording is quite specific and adding translations would just make
+        this a lot harder.
+
         """
 
         cfg = self.settings
@@ -457,19 +465,28 @@ class DaycareServicesWidget(object):
             </thead>
             <tbody>
                 <tr tal:repeat="day this.days">
-                    <td>
-                        <strong>${this.day_label(day)}</strong>
-                    </td>
+                    <th>
+                        <strong class="show-for-small-only">
+                            ${this.day_label(day)[:2]}
+                        </strong>
+                        <strong class="show-for-medium-up">
+                            ${this.day_label(day)}
+                        </strong>
+                    </th>
                     <td tal:repeat="svc this.services.available.values()">
-                        <input
-                            type="checkbox"
+                        <label>
+                            <input
+                                type="checkbox"
 
-                            id="${svc.id}-${day}"
-                            name="${this.field.name}"
-                            value="${svc.id}-${day}"
+                                id="${svc.id}-${day}"
+                                name="${this.field.name}"
+                                value="${svc.id}-${day}"
 
-                            tal:attributes="checked this.is_selected(svc, day)"
-                        />
+                                tal:attributes="
+                                    checked this.is_selected(svc, day)
+                                "
+                            />
+                        </label>
                     </td>
                 </tr>
             </tbody>
@@ -520,15 +537,26 @@ class DaycareServicesField(Field):
             )
 
             if days > 1:
-                raise ValidationError(
-                    "Es gibt Überschneidungen bei den gewählten "
-                    "Betreuungszeiten."
-                )
+                raise ValidationError(_("Each day may only be selected once."))
 
 
 class DaycareSubsidyCalculatorForm(Form):
 
     services = DaycareServicesField(
         label=_("Services"),
-        validators=(InputRequired(), )
-    )
+        validators=(InputRequired(), ))
+
+    income = DecimalField(
+        label=_("Taxable income"),
+        validators=(InputRequired(), NumberRange(min=0)))
+
+    wealth = DecimalField(
+        label=_("Taxable wealth"),
+        validators=(InputRequired(), NumberRange(min=0)))
+
+    rebate = BooleanField(
+        label=_("Rebate"),
+        description=_(
+            "Does at least one child in your household attend the same "
+            "daycare for more than two whole days a week?"
+        ))
