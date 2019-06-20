@@ -16,7 +16,7 @@ from onegov.org.models import Organisation
 from onegov.winterthur import _
 from ordered_set import OrderedSet
 from wtforms.fields import Field
-from wtforms.validators import InputRequired
+from wtforms.validators import InputRequired, ValidationError
 from wtforms.widgets.core import HTMLString
 
 
@@ -508,10 +508,22 @@ class DaycareServicesField(Field):
         return Services.from_session(self.meta.request.session)
 
     def process_formdata(self, valuelist):
-
         for value in valuelist:
             service_id, day = value.rsplit('-', maxsplit=1)
             self.services.select(service_id, int(day))
+
+    def pre_validate(self, form):
+        for day in SERVICE_DAYS.values():
+            days = sum(
+                1 for id in self.services.available
+                if self.services.is_selected(id, day)
+            )
+
+            if days > 1:
+                raise ValidationError(
+                    "Es gibt Überschneidungen bei den gewählten "
+                    "Betreuungszeiten."
+                )
 
 
 class DaycareSubsidyCalculatorForm(Form):
