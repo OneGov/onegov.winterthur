@@ -1,3 +1,4 @@
+import chameleon
 import textwrap
 import yaml
 
@@ -10,7 +11,13 @@ from onegov.core.utils import Bunch
 from onegov.core.utils import normalize_for_url
 from onegov.directory import DirectoryCollection
 from onegov.directory import DirectoryEntryCollection
+from onegov.form import Form
 from onegov.org.models import Organisation
+from onegov.winterthur import _
+from ordered_set import OrderedSet
+from wtforms.fields import Field
+from wtforms.validators import InputRequired
+from wtforms.widgets.core import HTMLString
 
 
 SERVICE_DAYS = {
@@ -21,6 +28,16 @@ SERVICE_DAYS = {
     'fr': 4,
     'sa': 5,
     'so': 6,
+}
+
+SERVICE_DAYS_LABELS = {
+    0: "Montag",
+    1: "Dienstag",
+    2: "Mittwoch",
+    3: "Donnerstag",
+    4: "Freitag",
+    5: "Samstag",
+    6: "Sonntag",
 }
 
 
@@ -50,12 +67,26 @@ class Daycare(object):
 class Services(object):
 
     def __init__(self, definition):
-        self.available = OrderedDict(self.parse_definition(definition))
+        if definition:
+            self.available = OrderedDict(self.parse_definition(definition))
+        else:
+            self.available = OrderedDict()
+
         self.selected = defaultdict(set)
 
     @classmethod
     def from_org(cls, org):
-        return cls(org.meta.get('daycare_settings')['services'])
+        if 'daycare_settings' not in org.meta:
+            return cls(None)
+
+        if 'services' not in org.meta['daycare_settings']:
+            return cls(None)
+
+        return cls(org.meta['daycare_settings']['services'])
+
+    @classmethod
+    def from_session(cls, session):
+        return cls.from_org(session.query(Organisation).one())
 
     @staticmethod
     def parse_definition(definition):
@@ -64,9 +95,10 @@ class Services(object):
             days = (d.strip() for d in service['tage'].split(','))
 
             yield service_id, Bunch(
+                id=service_id,
                 title=service['titel'],
                 percentage=Decimal(service['prozent']),
-                days={SERVICE_DAYS[d.lower()[:2]] for d in days}
+                days=OrderedSet(SERVICE_DAYS[d.lower()[:2]] for d in days),
             )
 
     def select(self, service_id, day):
@@ -74,6 +106,12 @@ class Services(object):
 
     def deselect(self, service_id, day):
         self.selected[service_id].remove(day)
+
+    def is_selected(self, service_id, day):
+        if service_id not in self.selected:
+            return False
+
+        return day in self.selected[service_id]
 
     @property
     def total(self):
@@ -398,3 +436,87 @@ class DaycareSubsidyCalculator(object):
             round=True)
 
         return (base, gross, net, actual, monthly)
+
+
+class DaycareServicesWidget(object):
+
+    template = chameleon.PageTemplate("""
+        <table class="daycare-services">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th tal:repeat="service this.services.available.values()">
+                        <div class="daycare-services-title">
+                            ${service.title}
+                        </div>
+                        <div class="daycare-services-percentage">
+                            ${service.percentage}%
+                        </div>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr tal:repeat="day this.days">
+                    <td>
+                        <strong>${this.day_label(day)}</strong>
+                    </td>
+                    <td tal:repeat="svc this.services.available.values()">
+                        <input
+                            type="checkbox"
+
+                            id="${svc.id}-${day}"
+                            name="${this.field.name}"
+                            value="${svc.id}-${day}"
+
+                            tal:attributes="checked this.is_selected(svc, day)"
+                        />
+                    </td>
+                </tr>
+            </tbody>
+        </table
+    """)
+
+    def __call__(self, field, **kwargs):
+        self.field = field
+        self.services = field.services
+
+        return HTMLString(self.template.render(this=self))
+
+    def is_selected(self, service, day):
+        return self.services.is_selected(service.id, day)
+
+    def day_label(self, day):
+        return SERVICE_DAYS_LABELS[day]
+
+    @property
+    def days(self):
+        days = OrderedSet()
+
+        for service in self.services.available.values():
+            for day in service.days:
+                days.add(day)
+
+        return days
+
+
+class DaycareServicesField(Field):
+
+    widget = DaycareServicesWidget()
+
+    @cached_property
+    def services(self):
+        return Services.from_session(self.meta.request.session)
+
+    def process_formdata(self, valuelist):
+
+        for value in valuelist:
+            service_id, day = value.rsplit('-', maxsplit=1)
+            self.services.select(service_id, int(day))
+
+
+class DaycareSubsidyCalculatorForm(Form):
+
+    services = DaycareServicesField(
+        label=_("Services"),
+        validators=(InputRequired(), )
+    )
