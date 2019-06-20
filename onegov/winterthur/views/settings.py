@@ -65,7 +65,7 @@ class WinterthurDaycareSettingsForm(Form):
         validators=[InputRequired()])
 
     services = TextAreaField(
-        label=_("Services"),
+        label=_("Care"),
         fieldset=_("Variables"),
         validators=[InputRequired()],
         render_kw={'rows': 32, 'data-editor': 'yaml'})

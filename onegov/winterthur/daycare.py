@@ -15,7 +15,7 @@ from onegov.form import Form
 from onegov.org.models import Organisation
 from onegov.winterthur import _
 from ordered_set import OrderedSet
-from wtforms.fields import Field, BooleanField
+from wtforms.fields import Field, BooleanField, SelectField
 from wtforms.fields.html5 import DecimalField
 from wtforms.validators import NumberRange, InputRequired, ValidationError
 from wtforms.widgets.core import HTMLString
@@ -125,14 +125,15 @@ class Services(object):
 
 class Result(object):
 
-    def __init__(self, title,
-                 amount=None, note=None, operation=None, bold=False):
+    def __init__(self, title, amount=None, note=None, operation=None,
+                 important=False, currency='CHF'):
 
         self.title = title
         self.amount = amount
         self.note = textwrap.dedent(note or '').strip(' \n')
         self.operation = operation
-        self.bold = bold
+        self.important = important
+        self.currency = currency
 
 
 class Block(object):
@@ -142,8 +143,8 @@ class Block(object):
         self.results = []
         self.total = Decimal(0)
 
-    def op(self, title,
-            amount=None, note=None, operation=None, bold=False, round=False):
+    def op(self, title, amount=None, note=None, operation=None,
+           important=False, round=False, currency='CHF'):
 
         transform = round and round_to_5_cents or (lambda a: a)
 
@@ -172,7 +173,8 @@ class Block(object):
             amount=transform(amount),
             note=note,
             operation=operation,
-            bold=bold,
+            important=important,
+            currency=currency,
         ))
 
 
@@ -332,6 +334,7 @@ class DaycareSubsidyCalculator(object):
         gross.op(
             title="Faktor",
             amount=cfg.wealth_factor,
+            currency=None,
             operation="×",
             note="""
                 Ihr Elternbeitrag wird aufgrund eines Faktors berechnet
@@ -399,7 +402,7 @@ class DaycareSubsidyCalculator(object):
             note="""
                 Ihr Beitrag pro Tag (100%) und Kind
             """,
-            bold=True)
+            important=True)
 
         actual.op(
             title="Städtischer Beitrag pro Tag",
@@ -412,7 +415,7 @@ class DaycareSubsidyCalculator(object):
         # --------------------
         monthly = Block(
             "Berechnung des Elternbeitrags und des städtischen Beitrags "
-            "pro Monat (Monatspauschale)")
+            "pro Monat")
 
         monthly.op(
             title="Wochentarif",
@@ -424,6 +427,7 @@ class DaycareSubsidyCalculator(object):
         monthly.op(
             title="Faktor",
             amount=daycare.factor,
+            currency=None,
             operation="×",
             note="""
                 Faktor für jährliche Öffnungswochen Ihrer Kita
@@ -432,7 +436,7 @@ class DaycareSubsidyCalculator(object):
         monthly.op(
             title="Elternbeitrag pro Monat",
             operation="=",
-            bold=True,
+            important=True,
             round=True)
 
         monthly.op(
@@ -503,7 +507,7 @@ class DaycareServicesWidget(object):
         return self.services.is_selected(service.id, day)
 
     def day_label(self, day):
-        return SERVICE_DAYS_LABELS[day]
+        return self.field.meta.request.translate(SERVICE_DAYS_LABELS[day])
 
     @property
     def days(self):
@@ -542,8 +546,13 @@ class DaycareServicesField(Field):
 
 class DaycareSubsidyCalculatorForm(Form):
 
+    daycare = SelectField(
+        label=_("Daycare"),
+        validators=(InputRequired(), ),
+        choices=(), )
+
     services = DaycareServicesField(
-        label=_("Services"),
+        label=_("Care"),
         validators=(InputRequired(), ))
 
     income = DecimalField(
@@ -560,3 +569,34 @@ class DaycareSubsidyCalculatorForm(Form):
             "Does at least one child in your household attend the same "
             "daycare for more than two whole days a week?"
         ))
+
+    def on_request(self):
+        self.daycare.choices = tuple(self.daycare_choices)
+
+    @property
+    def daycare_choices(self):
+
+        def choice(daycare):
+            label = _((
+                "${title} / day rate CHF ${rate} / "
+                "${weeks} weeks open per year"
+            ), mapping={
+                'title': daycare.title,
+                'rate': daycare.rate,
+                'weeks': daycare.weeks
+            })
+
+            return (daycare.id.hex, self.request.translate(label))
+
+        calculator = DaycareSubsidyCalculator(self.request.session)
+
+        for daycare in calculator.daycares.values():
+            yield choice(daycare)
+
+    @property
+    def selected_daycare(self):
+        calculator = DaycareSubsidyCalculator(self.request.session)
+
+        for daycare in calculator.daycares.values():
+            if daycare.id.hex == self.daycare.data:
+                return daycare

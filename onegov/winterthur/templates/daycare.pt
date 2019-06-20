@@ -3,6 +3,43 @@
         ${title}
     </tal:b>
     <tal:b metal:fill-slot="content">
+        <div class="daycare-calculator-result" tal:condition="blocks">
+            <div class="summary">
+                <dl>
+                    <tal:b repeat="block blocks">
+                        <tal:b repeat="result block.results">
+                            <div tal:condition="result.important">
+                                <dt>${result.title}</dt>
+                                <dd>${result.amount} ${result.currency}</dd>
+                            </div>
+                        </tal:b>
+                    </tal:b>
+                </dl>
+            </div>
+
+            <tal:b repeat="block blocks">
+                <h2>${block.title}</h2>
+
+                <table>
+                    <thead class="show-for-sr">
+                        <tr>
+                            <td i18n:translate>Note</td>
+                            <td i18n:translate>Title</td>
+                            <td i18n:translate>Operation</td>
+                            <td i18n:translate>Amount</td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr tal:repeat="result block.results" class="${result.important and 'important-result'}">
+                            <td>${result.note}</td>
+                            <td>${result.title}</td>
+                            <td>${result.operation}</td>
+                            <td>${result.amount} ${result.currency}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </tal:b>
+        </div>
         <div class="daycare-calculator">
             <div metal:use-macro="layout.macros['form']" />
         </div>

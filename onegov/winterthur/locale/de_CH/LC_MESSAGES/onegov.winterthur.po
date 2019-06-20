@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE 1.0\n"
-"POT-Creation-Date: 2019-05-29 09:45+0200\n"
+"POT-Creation-Date: 2019-06-20 17:55+0200\n"
 "PO-Revision-Date: 2017-03-02 09:52+0100\n"
 "Last-Translator: Denis Krienbühl <denis.krienbuehl@seantis.ch>\n"
 "Language-Team: German\n"
@@ -21,6 +21,9 @@ msgstr "Adressen"
 
 msgid "Roadworks"
 msgstr "Strassenbaustellen"
+
+msgid "Daycare Subsidy Calculator"
+msgstr "Kita Beitragsrechner"
 
 msgid "Mission Reports"
 msgstr "Einsatzberichte"
@@ -83,6 +86,56 @@ msgstr ""
 "Diese Seite ist nicht öffentlich. Bearbeiten Sie diese Seite und entfernen "
 "Sie das Häckchen im Feld \"Verbergen\"."
 
+msgid "Monday"
+msgstr "Montag"
+
+msgid "Tuesday"
+msgstr "Dienstag"
+
+msgid "Wednesday"
+msgstr "Mittwoch"
+
+msgid "Thursday"
+msgstr "Donnerstag"
+
+msgid "Friday"
+msgstr "Freitag"
+
+msgid "Saturday"
+msgstr "Samstag"
+
+msgid "Sunday"
+msgstr "Sonntag"
+
+msgid "Daycare"
+msgstr "Kita"
+
+msgid "Care"
+msgstr "Betreuung"
+
+msgid "Taxable income"
+msgstr "Steuerbares Einkommen"
+
+msgid "Taxable wealth"
+msgstr "Steuerbares Vermögen"
+
+msgid "Rebate"
+msgstr "Rabatt"
+
+msgid ""
+"Does at least one child in your household attend the same daycare for more "
+"than two whole days a week?"
+msgstr ""
+"Wird mindestens ein Kind in ihrem Haushalt mehr als zwei Tage pro Woche in "
+"derselben Kita betreut?"
+
+#, python-format
+msgid "${title} / day rate CHF ${rate} / ${weeks} weeks open per year"
+msgstr "${title} / Tagestarif CHF 120 / ${weeks} Öffnungswochen pro Jahr"
+
+msgid "Each day may only be selected once."
+msgstr "Jeder Tag kann höchstens einmal gewählt werden."
+
 msgid "Date"
 msgstr "Datum"
 
@@ -136,6 +189,18 @@ msgstr "Zurück zur Übersicht"
 
 msgid "Search in ${directory}"
 msgstr "Suche in ${directory}"
+
+msgid "Note"
+msgstr ""
+
+msgid "Title"
+msgstr ""
+
+msgid "Operation"
+msgstr ""
+
+msgid "Amount"
+msgstr ""
 
 msgid "Responsible Official Construction Site"
 msgstr "Zuständiger Sachbearbeiter Baustelle"
@@ -253,3 +318,48 @@ msgstr "Strassenverzeichnis"
 
 msgid "The streets directory has been updated"
 msgstr "Das Strassenverzeichnis wurde aktualisiert"
+
+msgid "Daycare Settings"
+msgstr "Kita Einstellungen"
+
+msgid "Maximum taxable income"
+msgstr "Maximal steuerbares Einkommen"
+
+msgid "Variables"
+msgstr "Variablen"
+
+msgid "Maximum taxable wealth"
+msgstr "Maximal steuerbares Vermögen"
+
+msgid "Minimum income"
+msgstr "Minimaleinkommen"
+
+msgid "Minimum day-rate"
+msgstr "Minimal Tagestarif"
+
+msgid "Maximum day-rate"
+msgstr "Maximal Tagestarif"
+
+msgid "Wealth premium (%)"
+msgstr "Vermögenszuschlag"
+
+msgid "Factor"
+msgstr "Faktor"
+
+msgid "Rebate (%)"
+msgstr "Rabatt (%)"
+
+msgid "Directory"
+msgstr "Verzeichnis"
+
+msgid "Institutions"
+msgstr "Institutionen"
+
+msgid "Invalid services configuration"
+msgstr "Ungültige "
+
+msgid "Calculate"
+msgstr "Berechnen"
+
+#~ msgid "Calculation successful"
+#~ msgstr "Berechnung erfolgreich"

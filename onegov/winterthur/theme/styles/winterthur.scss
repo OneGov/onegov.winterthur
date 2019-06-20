@@ -529,7 +529,11 @@ table.responsive {
 */
 .daycare-calculator {
     form {
-        max-width: 600px;
+        max-width: 700px;
+
+        .field-help {
+            max-width: $max-line-width;
+        }
     }
 
     .daycare-services {
@@ -542,6 +546,10 @@ table.responsive {
         td,
         tr {
             padding: 0;
+        }
+
+        input {
+            cursor: pointer;
         }
 
         label {
@@ -558,6 +566,72 @@ table.responsive {
                     padding: .5rem;
                 }
             }
+        }
+    }
+}
+
+.daycare-calculator-result {
+    max-width: 700px;
+
+    .summary {
+        dl {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        dl div {
+            background: $green-pastel;
+            border: 1px solid $green-light;
+            border-radius: 2px;
+            display: inline-block;
+            padding: 1rem;
+            width: calc(50% - .75rem);
+        }
+
+        dd {
+            margin-bottom: 0;
+        }
+    }
+
+    table {
+        border: 1px solid $gainsboro;
+
+        td {
+            border-bottom-color: $gainsboro;
+        }
+
+        tr:last-child td {
+            border-bottom: 0;
+        }
+    }
+
+    .important-result td:nth-child(2),
+    .important-result td:nth-child(4) {
+        font-weight: bold;
+    }
+
+    td {
+        vertical-align: top;
+
+        &:nth-child(1) {
+            background: $gainsboro;
+            width: 35%;
+        }
+
+        &:nth-child(2) {
+            border-right: 1px solid $gainsboro;
+            width: 35%;
+        }
+
+        &:nth-child(3) {
+            border-right: 1px solid $gainsboro;
+            text-align: center;
+            width: 10%;
+        }
+
+        &:nth-child(4) {
+            text-align: right;
+            width: 25%
         }
     }
 }
