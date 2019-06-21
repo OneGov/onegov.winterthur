@@ -19,7 +19,7 @@ def view_daycare_subsidy_calculator(self, request, form):
             services=form.services.services,
             income=form.income.data,
             wealth=form.wealth.data,
-            rebate=form.rebate.data,
+            rebate=form.rebate.data
         )
 
     return {

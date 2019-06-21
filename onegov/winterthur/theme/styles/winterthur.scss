@@ -562,7 +562,7 @@ table.responsive {
         @media #{$small-only} {
             & {
                 th {
-                    font-size: .7rem;
+                    font-size: .8rem;
                     padding: .5rem;
                 }
             }
@@ -576,6 +576,7 @@ table.responsive {
     dl.summary {
         display: flex;
         justify-content: space-between;
+        flex-wrap: wrap;
 
         div {
             background: $white-smoke;
@@ -585,6 +586,16 @@ table.responsive {
             display: inline-block;
             padding: .5rem .75rem .75rem;
             width: calc(50% - .75rem);
+
+            @media #{$small-only} {
+                & {
+                    width: 100%;
+                }
+
+                & + div {
+                    margin-top: .75rem;
+                }
+            }
 
             dt {
                 font-weight: normal;

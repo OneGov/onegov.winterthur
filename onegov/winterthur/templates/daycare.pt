@@ -24,7 +24,7 @@
                 <table>
                     <thead class="show-for-sr">
                         <tr>
-                            <td i18n:translate>Note</td>
+                            <td i18n:translate class="hide-for-small-only">Note</td>
                             <td i18n:translate>Title</td>
                             <td i18n:translate>Operation</td>
                             <td i18n:translate>Amount</td>
@@ -32,10 +32,10 @@
                     </thead>
                     <tbody>
                         <tr tal:repeat="result block.results" class="${result.important and 'important-result'}">
-                            <td>${result.note}</td>
+                            <td class="hide-for-small-only">${result.note}</td>
                             <td>${result.title}</td>
                             <td>${result.operation}</td>
-                            <td>${result.amount} ${result.currency}</td>
+                            <td>${result.readable_amount} ${result.currency}</td>
                         </tr>
                     </tbody>
                 </table>

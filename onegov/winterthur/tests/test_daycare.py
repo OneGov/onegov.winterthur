@@ -58,6 +58,13 @@ def app(winterthur_app):
         webseite="",
     ))
 
+    directory.add(values=dict(
+        name="Apfelblüte",
+        tagestarif=107,
+        offnungswochen=51,
+        webseite="",
+    ))
+
     org = session.query(Organisation).one()
     org.meta['daycare_settings'] = {
         'rebate': Decimal('5.00'),
@@ -90,7 +97,7 @@ def app(winterthur_app):
     return app
 
 
-def test_calculate_base(app):
+def test_calculate_example_1(app):
     calculator = DaycareSubsidyCalculator(app.session())
 
     services = Services.from_org(app.org)
@@ -148,5 +155,69 @@ def test_calculate_base(app):
         ("Wochentarif", None, Decimal('513.25')),
         ("Faktor", "×", Decimal('4.25')),
         ("Elternbeitrag pro Monat", "=", Decimal('2181.30')),
-        ("Städtischer Beitrag pro Monat", None, Decimal('113.70')),
+        ("Städtischer Beitrag pro Monat", None, Decimal('113.69')),
+    ]
+
+
+def test_calculate_example_2(app):
+    calculator = DaycareSubsidyCalculator(app.session())
+
+    services = Services.from_org(app.org)
+    services.select('ganzer-tag-inkl-mitagessen', 'mo')
+    services.select('ganzer-tag-inkl-mitagessen', 'di')
+    services.select('ganzer-tag-inkl-mitagessen', 'mi')
+    services.select('ganzer-tag-inkl-mitagessen', 'do')
+    services.select('ganzer-tag-inkl-mitagessen', 'fr')
+
+    calculation = calculator.calculate(
+        daycare=calculator.daycare_by_title("Apfelblüte"),
+        services=services,
+        income=Decimal('25000'),
+        wealth=Decimal('0'),
+        rebate=False,
+    )
+
+    base, gross, net, actual, monthly = calculation.blocks
+
+    # note, these results slightly differ from the output, as the rounding
+    # only happens when the numbers are rendered
+    results = [(r.title, r.amount) for r in base.results]
+    assert results == [
+        ("Steuerbares Einkommen", Decimal('25000')),
+        ("Vermögenszuschlag", Decimal('0')),
+        ("Massgebendes Gesamteinkommen", Decimal('25000')),
+        ("Abzüglich Minimaleinkommen", Decimal('20000')),
+        ("Berechnungsgrundlage", Decimal('5000')),
+    ]
+
+    results = [(r.title, r.amount) for r in gross.results]
+    assert results == [
+        ("Übertrag", Decimal('5000')),
+        ("Faktor", Decimal("0.0016727273")),
+        ("Einkommensabhängiger Elternbeitragsbestandteil", Decimal("8.3636")),
+        ("Mindestbeitrag Eltern", Decimal("15")),
+        ("Elternbeitrag brutto", Decimal("23.364")),
+    ]
+
+    results = [(r.title, r.amount) for r in net.results]
+    assert results == [
+        ("Übertrag", Decimal('23.364')),
+        ("Rabatt", Decimal('0')),
+        ("Elternbeitrag netto", Decimal('23.364')),
+    ]
+
+    results = [(r.title, r.amount) for r in actual.results]
+    assert results == [
+        ("Übertrag", Decimal('23.364')),
+        ("Zusatzbeitrag Eltern", Decimal('0')),
+        ("Elternbeitrag pro Tag", Decimal('23.364')),
+        ("Städtischer Beitrag pro Tag", Decimal('83.636'))
+    ]
+
+    results = [(r.title, r.amount) for r in monthly.results]
+    assert results == [
+        ("Wochentarif", Decimal('116.82')),
+        ("Faktor", Decimal('4.2500')),
+        ("Elternbeitrag pro Monat", Decimal('496.48')),
+        ("Städtischer Beitrag pro Monat", Decimal('1777.3')),
     ]

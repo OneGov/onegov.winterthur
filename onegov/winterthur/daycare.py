@@ -41,11 +41,35 @@ SERVICE_DAYS_LABELS = {
     6: _("Sunday"),
 }
 
+# http://babel.pocoo.org/en/latest/numbers.html#pattern-syntax
+FORMAT = '#,##0.00########'
 
-def round_to_5_cents(n):
-    """ Rounds a number to 5 cents. """
 
-    return int(n / Decimal('0.05') + Decimal('0.5')) * Decimal('0.05')
+def round_to(n, precision):
+    assert isinstance(precision, str)
+
+    precision = Decimal(precision)
+    correction = Decimal('0.5') if n >= 0 else Decimal('-0.5')
+
+    return int(n / precision + correction) * precision
+
+
+def format_precise(amount):
+    if not amount:
+        return '0.00'
+
+    with localcontext() as ctx:
+        ctx.prec = 28
+
+        return format_decimal(amount, format=FORMAT, locale='de_CH')
+
+
+def format_1_cent(amount):
+    return format_precise(round_to(amount, '0.01'))
+
+
+def format_5_cents(amount):
+    return format_precise(round_to(amount, '0.05'))
 
 
 class Daycare(object):
@@ -126,7 +150,7 @@ class Services(object):
 class Result(object):
 
     def __init__(self, title, amount=None, note=None, operation=None,
-                 important=False, currency='CHF'):
+                 important=False, currency='CHF', output_format=None):
 
         self.title = title
         self.amount = amount
@@ -134,9 +158,14 @@ class Result(object):
         self.operation = operation
         self.important = important
         self.currency = currency
+        self.output_format = output_format or format_1_cent
 
     def __bool__(self):
         return bool(self.amount)
+
+    @property
+    def readable_amount(self):
+        return self.output_format(self.amount)
 
 
 class Block(object):
@@ -147,41 +176,40 @@ class Block(object):
         self.total = Decimal(0)
 
     def op(self, title, amount=None, note=None, operation=None,
-           important=False, round=False, currency='CHF'):
-
-        transform = round and round_to_5_cents or (lambda a: a)
+           important=False, currency='CHF', output_format=None):
 
         if operation is None:
             assert amount is not None
-            self.total = transform(amount)
+            self.total = amount
 
         elif operation == '+':
             assert amount is not None
-            self.total += transform(amount)
+            self.total += amount
 
         elif operation == '=':
             assert amount is None
-            amount = self.total = max(transform(self.total), Decimal('0'))
+            amount = self.total = max(self.total, Decimal('0'))
 
         elif operation == '-':
             assert amount is not None
-            self.total -= transform(amount)
+            self.total -= amount
 
         elif operation in ('*', 'x', '×', '⋅'):
             assert amount is not None
-            self.total *= transform(amount)
+            self.total *= amount
 
         elif operation in ('/', '÷'):
             assert amount is not None
-            self.total /= transform(amount)
+            self.total /= amount
 
         self.results.append(Result(
             title=title,
-            amount=transform(amount),
+            amount=amount,
             note=note,
             operation=operation,
             important=important,
             currency=currency,
+            output_format=output_format,
         ))
 
         return self.total
@@ -290,13 +318,7 @@ class DaycareSubsidyCalculator(object):
         """
 
         cfg = self.settings
-
-        def fmt(amount):
-
-            # babel needs its own decimal context, or it throws errors
-            with localcontext() as ctx:
-                ctx.prec = 28
-                return format_decimal(amount, locale='de_CH')
+        fmt = format_precise
 
         # Base Rate
         # ---------
@@ -306,7 +328,7 @@ class DaycareSubsidyCalculator(object):
             title="Steuerbares Einkommen",
             amount=income,
             note="""
-                Steuerbares Einkommen gemäss letzter Veranlagung
+                Steuerbares Einkommen gemäss letzter Veranlagung.
             """)
 
         base.op(
@@ -314,7 +336,7 @@ class DaycareSubsidyCalculator(object):
             amount=max((wealth - cfg.max_wealth) * cfg.wealth_premium, 0),
             operation="+",
             note=f"""
-                Der Vermögenszuschlag beträgt {fmt(cfg.wealth_premium)} des
+                Der Vermögenszuschlag beträgt {fmt(cfg.wealth_premium)}% des
                 Vermögens, für das tatsächlich Steuern anfallen
                 (ab {fmt(cfg.max_wealth)} CHF).
             """)
@@ -347,8 +369,9 @@ class DaycareSubsidyCalculator(object):
             operation="×",
             note="""
                 Ihr Elternbeitrag wird aufgrund eines Faktors berechnet
-                (Kita-Reglement Art. 20 Abs 3)
-            """)
+                (Kita-Reglement Art. 20 Abs 3).
+            """,
+            output_format=format_precise)
 
         gross.op(
             title="Einkommensabhängiger Elternbeitragsbestandteil",
@@ -409,15 +432,16 @@ class DaycareSubsidyCalculator(object):
             title="Elternbeitrag pro Tag",
             operation="=",
             note="""
-                Ihr Beitrag pro Tag (100%) und Kind
+                Ihr Beitrag pro Tag (100%) und Kind.
             """,
             important=True)
 
         city_share_per_day = actual.op(
             title="Städtischer Beitrag pro Tag",
             amount=max(daycare.rate - parent_share_per_day, Decimal('0.00')),
+            important=True,
             note="""
-                Städtischer Beitrag für Ihr Kind pro Tag
+                Städtischer Beitrag für Ihr Kind pro Tag.
             """)
 
         # Monthly contribution
@@ -430,7 +454,7 @@ class DaycareSubsidyCalculator(object):
             title="Wochentarif",
             amount=parent_share_per_day * services.total / 100,
             note="""
-                Wochentarif: Elternbeiträge der gewählten Betreuungstage
+                Wochentarif: Elternbeiträge der gewählten Betreuungstage.
             """)
 
         monthly.op(
@@ -439,29 +463,29 @@ class DaycareSubsidyCalculator(object):
             currency=None,
             operation="×",
             note="""
-                Faktor für jährliche Öffnungswochen Ihrer Kita
-            """)
+                Faktor für jährliche Öffnungswochen Ihrer Kita.
+            """,
+            output_format=format_precise)
 
         parent_share_per_month = monthly.op(
             title="Elternbeitrag pro Monat",
             operation="=",
             important=True,
-            round=True)
+            output_format=format_5_cents)
 
         city_share_per_month = monthly.op(
             title="Städtischer Beitrag pro Monat",
             amount=city_share_per_day * services.total / 100 * daycare.factor,
+            important=True,
             note="""
-                Städtischer Beitrag für Ihr Kind pro Tag
+                Städtischer Beitrag für Ihr Kind pro Monat.
             """,
-            round=True)
+            output_format=format_5_cents)
 
         return Bunch(
             blocks=(base, gross, net, actual, monthly),
-            parent_share_per_day=parent_share_per_day,
-            parent_share_per_month=parent_share_per_month,
-            city_share_per_day=city_share_per_day,
-            city_share_per_month=city_share_per_month,
+            parent_share_per_month=format_5_cents(parent_share_per_month),
+            city_share_per_month=format_5_cents(city_share_per_month),
         )
 
 
