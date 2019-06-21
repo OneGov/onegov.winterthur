@@ -573,74 +573,114 @@ table.responsive {
 .daycare-calculator-result {
     max-width: 700px;
 
-    dl.summary {
-        display: flex;
-        justify-content: space-between;
-        flex-wrap: wrap;
+    .panel.warning {
+        background: $yellow-light;
+        border: 0;
+        font-size: 1rem;
+        padding: .75rem;
+    }
 
-        div {
-            background: $white-smoke;
-            border: 1px solid $gainsboro;
-            border-radius: 3px;
+    .summary {
+        dl.summary-amounts {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
 
-            display: inline-block;
-            padding: .5rem .75rem .75rem;
-            width: calc(50% - .75rem);
-
-            @media #{$small-only} {
-                & {
-                    width: 100%;
-                }
-
-                & + div {
-                    margin-top: .75rem;
-                }
-            }
-
-            dt {
-                font-weight: normal;
-            }
-
-            dd {
+            div {
+                background: $gray-ultra-light;
+                border: 0;
                 border-radius: 3px;
+
                 display: inline-block;
-                font-weight: bold;
-                margin-bottom: 0;
-                padding: 0 .5rem;
-            }
+                padding: .5rem .75rem .75rem;
+                width: calc(50% - .75rem);
 
-            &.success dd {
-                background: $green;
-                color: $white;
+                @media #{$small-only} {
+                    & {
+                        width: 100%;
+                    }
 
-                &::before {
-                    @include icon('\f058');
-                    margin-right: 1ex;
+                    & + div {
+                        margin-top: .75rem;
+                    }
+                }
+
+                dt {
+                    font-weight: normal;
+                }
+
+                dd {
+                    border-radius: 3px;
+                    display: inline-block;
+                    font-weight: bold;
+                    margin-bottom: 0;
+                    padding: 0 .5rem;
+                }
+
+                &.success dd {
+                    background: $green;
+                    color: $white;
+
+                    &::before {
+                        @include icon('\f058');
+                        margin-right: 1ex;
+                    }
+                }
+
+                &.plain dd {
+                    background: $white;
+                    color: $body-font-color;
+                }
+
+                &.warning dd {
+                    background: $yellow-dark;
+                    color: $white;
+
+                    &::before {
+                        @include icon('\f06a');
+                        margin-right: 1ex;
+                    }
                 }
             }
+        }
 
-            &.plain dd {
-                background: $gainsboro;
-                color: $body-font-color;
+        table.summary-agenda {
+            border: 0;
+            width: 100%;
+
+            td {
+                background: transparent;
+                border: 0;
             }
 
-            &.warning dd {
-                background: $yellow-dark;
-                color: $white;
+            td:nth-child(1) {
+                width: 24.5%;
+            }
 
-                &::before {
-                    @include icon('\f06a');
-                    margin-right: 1ex;
+            td:nth-child(2) {
+                width: 50.5%;
+            }
+
+            td:nth-child(3) {
+                text-align: right;
+                width: 20%;
+            }
+
+            tr:last-child {
+                td {
+                    border-bottom: 3px double $gainsboro;
+                    border-top: 1px solid $gainsboro;
+                    font-weight: bold;
                 }
             }
         }
     }
 
     table {
-        border: 1px solid $gainsboro;
+        border: 1px solid $gray-light;
 
         td {
-            border-bottom-color: $gainsboro;
+            border-bottom-color: $gray-light;
         }
 
         tr:last-child td {
@@ -657,17 +697,17 @@ table.responsive {
         vertical-align: top;
 
         &:nth-child(1) {
-            background: $gainsboro;
+            background: $gray-light;
             width: 35%;
         }
 
         &:nth-child(2) {
-            border-right: 1px solid $gainsboro;
+            border-right: 1px solid $gray-light;
             width: 35%;
         }
 
         &:nth-child(3) {
-            border-right: 1px solid $gainsboro;
+            border-right: 1px solid $gray-light;
             text-align: center;
             width: 10%;
         }

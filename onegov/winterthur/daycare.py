@@ -170,7 +170,8 @@ class Result(object):
 
 class Block(object):
 
-    def __init__(self, title):
+    def __init__(self, id, title):
+        self.id = id
         self.title = title
         self.results = []
         self.total = Decimal(0)
@@ -187,8 +188,8 @@ class Block(object):
             self.total += amount
 
         elif operation == '=':
-            assert amount is None
-            amount = self.total = max(self.total, Decimal('0'))
+            amount = self.total if amount is None else amount
+            self.total = max(amount, Decimal('0'))
 
         elif operation == '-':
             assert amount is not None
@@ -322,7 +323,7 @@ class DaycareSubsidyCalculator(object):
 
         # Base Rate
         # ---------
-        base = Block("Berechnungsgrundlage für die Elternbeiträge")
+        base = Block('base', "Berechnungsgrundlage für die Elternbeiträge")
 
         base.op(
             title="Steuerbares Einkommen",
@@ -356,7 +357,7 @@ class DaycareSubsidyCalculator(object):
 
         # Gross Contribution
         # ------------------
-        gross = Block("Berechnung des Brutto-Elternbeitrags")
+        gross = Block('gross', "Berechnung des Brutto-Elternbeitrags")
 
         gross.op(
             title="Übertrag",
@@ -384,13 +385,14 @@ class DaycareSubsidyCalculator(object):
 
         gross.op(
             title="Elternbeitrag brutto",
-            operation="=")
+            operation="=",
+            amount=min(gross.total, daycare.rate))
 
         # Rebate
         # ------
         rebate = gross.total * cfg.rebate / 100 if rebate else 0
 
-        net = Block("Berechnung des Rabatts")
+        net = Block('net', "Berechnung des Rabatts")
 
         net.op(
             title="Übertrag",
@@ -411,9 +413,10 @@ class DaycareSubsidyCalculator(object):
 
         # Actual contribution
         # -------------------
-        actual = Block(
+        actual = Block('actual', (
             "Berechnung des Elternbeitrags und des "
-            "städtischen Beitrags pro Tag")
+            "städtischen Beitrags pro Tag"
+        ))
 
         actual.op(
             title="Übertrag",
@@ -447,8 +450,11 @@ class DaycareSubsidyCalculator(object):
         # Monthly contribution
         # --------------------
         monthly = Block(
-            "Berechnung des Elternbeitrags und des städtischen Beitrags "
-            "pro Monat")
+            'monthly', (
+                "Berechnung des Elternbeitrags und des städtischen "
+                "Beitrags pro Monat"
+            )
+        )
 
         monthly.op(
             title="Wochentarif",
@@ -482,10 +488,31 @@ class DaycareSubsidyCalculator(object):
             """,
             output_format=format_5_cents)
 
+        # Services table
+        # --------------
+        def services_table():
+            total = Decimal(0)
+            total_percentage = Decimal(0)
+
+            for day in SERVICE_DAYS.values():
+                for service_id in services.selected:
+                    if day in services.selected[service_id]:
+                        service = services.available[service_id]
+                        cost = parent_share_per_day * service.percentage / 100
+
+                        total += cost
+                        total_percentage += service.percentage
+
+                        label = SERVICE_DAYS_LABELS[day]
+                        yield (label, service.title, format_5_cents(cost))
+
+            yield (_("Total"), None, format_5_cents(total))
+
         return Bunch(
             blocks=(base, gross, net, actual, monthly),
             parent_share_per_month=format_5_cents(parent_share_per_month),
             city_share_per_month=format_5_cents(city_share_per_month),
+            agenda=tuple(services_table()),
         )
 
 

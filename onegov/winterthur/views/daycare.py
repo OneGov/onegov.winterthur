@@ -28,4 +28,7 @@ def view_daycare_subsidy_calculator(self, request, form):
         'form': form,
         'calculation': calculation,
         'button_text': _("Calculate"),
+        'eligible': (
+            calculation and calculation.city_share_per_month != '0.00'
+        )
     }

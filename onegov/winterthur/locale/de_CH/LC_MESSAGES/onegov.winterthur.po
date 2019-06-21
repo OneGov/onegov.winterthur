@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE 1.0\n"
-"POT-Creation-Date: 2019-06-21 11:09+0200\n"
+"POT-Creation-Date: 2019-06-21 15:34+0200\n"
 "PO-Revision-Date: 2017-03-02 09:52+0100\n"
 "Last-Translator: Denis Krienbühl <denis.krienbuehl@seantis.ch>\n"
 "Language-Team: German\n"
@@ -133,6 +133,9 @@ msgstr ""
 msgid "${title} / day rate CHF ${rate} / ${weeks} weeks open per year"
 msgstr "${title} / Tagestarif CHF ${rate} / ${weeks} Öffnungswochen pro Jahr"
 
+msgid "Total"
+msgstr "Total"
+
 msgid "Each day may only be selected once."
 msgstr "Jeder Tag kann höchstens einmal gewählt werden."
 
@@ -198,6 +201,27 @@ msgstr "Ihre monatlichen Kosten"
 
 msgid "Our monthly contribution"
 msgstr "Unser monatlicher Beitrag"
+
+msgid ""
+"Since your taxable income and wealth is above 75'000.00 CHF, you are not "
+"eligible for any contributions by the city. You need to pay the full rate of "
+"your daycare."
+msgstr ""
+"Da Ihr steuerbares Einkommen und Vermögen über 75'000.00 CHF liegen, sind "
+"Sie nicht berechtigt, städtische Beiträge zu erhalten. Sie bezahlen den "
+"Tagestarif Ihrer Kita."
+
+msgid "Your costs per week"
+msgstr "Ihre Kosten pro Woche"
+
+msgid "Day"
+msgstr "Tag"
+
+msgid "Service"
+msgstr "Betreuung"
+
+msgid "Cost"
+msgstr "Kosten"
 
 msgid "Note"
 msgstr "Notiz"
@@ -369,6 +393,21 @@ msgstr "Ungültige "
 
 msgid "Calculate"
 msgstr "Berechnen"
+
+#~ msgid "Per Week"
+#~ msgstr "Pro Woche"
+
+#~ msgid "Per Month"
+#~ msgstr "Pro Monat"
+
+#~ msgid "Total per Week"
+#~ msgstr "Total pro Woche"
+
+#~ msgid "Total per Month"
+#~ msgstr "Total pro Monat"
+
+#~ msgid "Agenda"
+#~ msgstr "Agenda"
 
 #~ msgid "Calculation successful"
 #~ msgstr "Berechnung erfolgreich"
