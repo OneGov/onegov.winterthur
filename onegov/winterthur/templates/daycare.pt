@@ -3,21 +3,21 @@
         ${title}
     </tal:b>
     <tal:b metal:fill-slot="content">
-        <div class="daycare-calculator-result" tal:condition="blocks">
-            <div class="summary">
-                <dl>
-                    <tal:b repeat="block blocks">
-                        <tal:b repeat="result block.results">
-                            <div tal:condition="result.important">
-                                <dt>${result.title}</dt>
-                                <dd>${result.amount} ${result.currency}</dd>
-                            </div>
-                        </tal:b>
-                    </tal:b>
-                </dl>
-            </div>
+        <div class="daycare-calculator-result" tal:condition="calculation">
 
-            <tal:b repeat="block blocks">
+            <dl class="summary">
+                <div class="plain">
+                    <dt i18n:translate>Your monthly costs</dt>
+                    <dd>${calculation.parent_share_per_month.amount} CHF</dd>
+                </div>
+
+                <div class="${calculation.city_share_per_month and 'success' or 'warning'}">
+                    <dt i18n:translate>Our monthly contribution</dt>
+                    <dd>${calculation.city_share_per_month.amount} CHF</dd>
+                </div>
+            </dl>
+
+            <tal:b repeat="block calculation.blocks">
                 <h2>${block.title}</h2>
 
                 <table>

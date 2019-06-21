@@ -11,10 +11,10 @@ from onegov.winterthur.layout import DaycareSubsidyCalculatorLayout
     permission=Public,
     template='daycare.pt')
 def view_daycare_subsidy_calculator(self, request, form):
-    blocks = None
+    calculation = None
 
     if form.submitted(request):
-        blocks = self.calculate(
+        calculation = self.calculate(
             daycare=form.selected_daycare,
             services=form.services.services,
             income=form.income.data,
@@ -26,6 +26,6 @@ def view_daycare_subsidy_calculator(self, request, form):
         'title': _("Daycare Subsidy Calculator"),
         'layout': DaycareSubsidyCalculatorLayout(self, request),
         'form': form,
-        'blocks': blocks,
+        'calculation': calculation,
         'button_text': _("Calculate"),
     }

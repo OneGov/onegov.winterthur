@@ -62,7 +62,7 @@ class Daycare(object):
         existing solution. Why this is 4.25 is unclear.
 
         """
-        return Decimal(self.weeks * (4.25 / 51))
+        return round(Decimal(self.weeks * (4.25 / 51)), 4)
 
 
 class Services(object):
@@ -135,6 +135,9 @@ class Result(object):
         self.important = important
         self.currency = currency
 
+    def __bool__(self):
+        return bool(self.amount)
+
 
 class Block(object):
 
@@ -154,7 +157,7 @@ class Block(object):
 
         elif operation == '=':
             assert amount is None
-            amount = transform(self.total)
+            amount = self.total = max(transform(self.total), Decimal('0'))
 
         elif operation == '-':
             assert amount is not None
@@ -193,15 +196,15 @@ class DirectoryDaycareAdapter(object):
 
         for field in self.directory.basic_fields:
 
-            if 'tagestarif' in field.label.lower():
+            if 'tarif' in field.label.lower():
                 fieldmap['daycare_rate'] = field.id
                 continue
 
-            if 'öffnungswochen' in field.label.lower():
+            if 'woche' in field.label.lower():
                 fieldmap['daycare_weeks'] = field.id
                 continue
 
-            if 'webseite' in field.label.lower():
+            if 'web' in field.label.lower():
                 fieldmap['daycare_url'] = field.id
                 continue
 
@@ -447,7 +450,13 @@ class DaycareSubsidyCalculator(object):
             """,
             round=True)
 
-        return (base, gross, net, actual, monthly)
+        return Bunch(
+            blocks=(base, gross, net, actual, monthly),
+            parent_share_per_day=actual.results[-2],
+            parent_share_per_month=monthly.results[-2],
+            city_share_per_day=actual.results[-1],
+            city_share_per_month=monthly.results[-1],
+        )
 
 
 class DaycareServicesWidget(object):

@@ -100,13 +100,15 @@ def test_calculate_base(app):
     services.select('ganzer-tag-inkl-mitagessen', 'do')
     services.select('ganzer-tag-inkl-mitagessen', 'fr')
 
-    base, gross, net, actual, monthly = calculator.calculate(
+    calculation = calculator.calculate(
         daycare=calculator.daycare_by_title("Fantasia"),
         services=services,
         income=Decimal('75000'),
         wealth=Decimal('150000'),
         rebate=True,
     )
+
+    base, gross, net, actual, monthly = calculation.blocks
 
     results = [(r.title, r.operation, r.amount) for r in base.results]
     assert results == [
