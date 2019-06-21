@@ -151,7 +151,11 @@ class Block(object):
 
         transform = round and round_to_5_cents or (lambda a: a)
 
-        if operation in (None, '+'):
+        if operation is None:
+            assert amount is not None
+            self.total = transform(amount)
+
+        elif operation == '+':
             assert amount is not None
             self.total += transform(amount)
 
@@ -179,6 +183,8 @@ class Block(object):
             important=important,
             currency=currency,
         ))
+
+        return self.total
 
 
 class DirectoryDaycareAdapter(object):
@@ -399,7 +405,7 @@ class DaycareSubsidyCalculator(object):
                 {cfg.max_rate} CHF liegt.
             """)
 
-        actual.op(
+        parent_share_per_day = actual.op(
             title="Elternbeitrag pro Tag",
             operation="=",
             note="""
@@ -407,9 +413,9 @@ class DaycareSubsidyCalculator(object):
             """,
             important=True)
 
-        actual.op(
+        city_share_per_day = actual.op(
             title="Städtischer Beitrag pro Tag",
-            amount=rebate,
+            amount=daycare.rate - parent_share_per_day,
             note="""
                 Städtischer Beitrag für Ihr Kind pro Tag
             """)
@@ -422,7 +428,7 @@ class DaycareSubsidyCalculator(object):
 
         monthly.op(
             title="Wochentarif",
-            amount=(actual.total - rebate) * services.total / 100,
+            amount=parent_share_per_day * services.total / 100,
             note="""
                 Wochentarif: Elternbeiträge der gewählten Betreuungstage
             """)
@@ -436,15 +442,15 @@ class DaycareSubsidyCalculator(object):
                 Faktor für jährliche Öffnungswochen Ihrer Kita
             """)
 
-        monthly.op(
+        parent_share_per_month = monthly.op(
             title="Elternbeitrag pro Monat",
             operation="=",
             important=True,
             round=True)
 
-        monthly.op(
+        city_share_per_month = monthly.op(
             title="Städtischer Beitrag pro Monat",
-            amount=rebate * services.total / 100 * daycare.factor,
+            amount=city_share_per_day * services.total / 100 * daycare.factor,
             note="""
                 Städtischer Beitrag für Ihr Kind pro Tag
             """,
@@ -452,10 +458,10 @@ class DaycareSubsidyCalculator(object):
 
         return Bunch(
             blocks=(base, gross, net, actual, monthly),
-            parent_share_per_day=actual.results[-2],
-            parent_share_per_month=monthly.results[-2],
-            city_share_per_day=actual.results[-1],
-            city_share_per_month=monthly.results[-1],
+            parent_share_per_day=parent_share_per_day,
+            parent_share_per_month=parent_share_per_month,
+            city_share_per_day=city_share_per_day,
+            city_share_per_month=city_share_per_month,
         )
 
 

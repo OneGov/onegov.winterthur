@@ -5,15 +5,16 @@
     <tal:b metal:fill-slot="content">
         <div class="daycare-calculator-result" tal:condition="calculation">
 
+            <h2 i18n:translate>Summary</h2>
             <dl class="summary">
                 <div class="plain">
                     <dt i18n:translate>Your monthly costs</dt>
-                    <dd>${calculation.parent_share_per_month.amount} CHF</dd>
+                    <dd>${calculation.parent_share_per_month} CHF</dd>
                 </div>
 
                 <div class="${calculation.city_share_per_month and 'success' or 'warning'}">
                     <dt i18n:translate>Our monthly contribution</dt>
-                    <dd>${calculation.city_share_per_month.amount} CHF</dd>
+                    <dd>${calculation.city_share_per_month} CHF</dd>
                 </div>
             </dl>
 
