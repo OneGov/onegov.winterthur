@@ -131,7 +131,7 @@ msgstr ""
 
 #, python-format
 msgid "${title} / day rate CHF ${rate} / ${weeks} weeks open per year"
-msgstr "${title} / Tagestarif CHF 120 / ${weeks} Öffnungswochen pro Jahr"
+msgstr "${title} / Tagestarif CHF ${rate} / ${weeks} Öffnungswochen pro Jahr"
 
 msgid "Each day may only be selected once."
 msgstr "Jeder Tag kann höchstens einmal gewählt werden."

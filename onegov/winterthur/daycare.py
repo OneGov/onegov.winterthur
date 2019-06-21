@@ -603,15 +603,11 @@ class DaycareSubsidyCalculatorForm(Form):
 
             return (daycare.id.hex, self.request.translate(label))
 
-        calculator = DaycareSubsidyCalculator(self.request.session)
-
-        for daycare in calculator.daycares.values():
+        for daycare in self.model.daycares.values():
             yield choice(daycare)
 
     @property
     def selected_daycare(self):
-        calculator = DaycareSubsidyCalculator(self.request.session)
-
-        for daycare in calculator.daycares.values():
+        for daycare in self.model.daycares.values():
             if daycare.id.hex == self.daycare.data:
                 return daycare
