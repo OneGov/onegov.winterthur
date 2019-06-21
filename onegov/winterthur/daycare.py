@@ -415,7 +415,7 @@ class DaycareSubsidyCalculator(object):
 
         city_share_per_day = actual.op(
             title="Städtischer Beitrag pro Tag",
-            amount=daycare.rate - parent_share_per_day,
+            amount=max(daycare.rate - parent_share_per_day, Decimal('0.00')),
             note="""
                 Städtischer Beitrag für Ihr Kind pro Tag
             """)
