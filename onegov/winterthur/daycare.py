@@ -82,11 +82,7 @@ class Daycare(object):
 
     @property
     def factor(self):
-        """ Currently not really specified anywhere, just taken from the
-        existing solution. Why this is 4.25 is unclear.
-
-        """
-        return round(Decimal(self.weeks * (4.25 / 51)), 4)
+        return Decimal(self.weeks) / Decimal('12')
 
 
 class Services(object):
@@ -177,7 +173,17 @@ class Block(object):
         self.total = Decimal(0)
 
     def op(self, title, amount=None, note=None, operation=None,
-           important=False, currency='CHF', output_format=None):
+           important=False, currency='CHF', output_format=None,
+           total_places=2, amount_places=2):
+
+        if amount == 0:
+            amount = Decimal('0')
+
+        def limit_total(total):
+            return total.quantize(Decimal(f'0.{"0" * (total_places - 1)}1'))
+
+        def limit_amount(amount):
+            return amount.quantize(Decimal(f'0.{"0" * (amount_places - 1)}1'))
 
         if operation is None:
             assert amount is not None
@@ -202,6 +208,10 @@ class Block(object):
         elif operation in ('/', '÷'):
             assert amount is not None
             self.total /= amount
+
+        # limit the amount and the total after the operation, not before
+        self.total = limit_total(self.total)
+        amount = limit_amount(amount)
 
         self.results.append(Result(
             title=title,
@@ -254,6 +264,44 @@ class DirectoryDaycareAdapter(object):
         )
 
 
+class Settings(object):
+
+    def __init__(self, organisation):
+        settings = organisation.meta.get('daycare_settings', {})
+
+        for key, value in settings.items():
+            setattr(self, key, value)
+
+    def is_valid(self):
+        keys = (
+            'directory',
+            'max_income',
+            'max_rate',
+            'max_subsidy',
+            'max_wealth',
+            'min_income',
+            'min_rate',
+            'rebate',
+            'services',
+            'wealth_premium',
+        )
+
+        for key in keys:
+            if not hasattr(self, key):
+                return False
+
+        return True
+
+    def factor(self, daycare):
+        min_day_rate = daycare.rate - self.min_rate
+        min_day_rate = min(min_day_rate, self.max_subsidy)
+
+        factor = min_day_rate / (self.max_income - self.min_income)
+        factor = factor.quantize(Decimal('0.000000001'))
+
+        return factor
+
+
 class DaycareSubsidyCalculator(object):
 
     def __init__(self, session):
@@ -265,7 +313,7 @@ class DaycareSubsidyCalculator(object):
 
     @cached_property
     def settings(self):
-        return Bunch(**self.organisation.meta.get('daycare_settings'))
+        return Settings(self.organisation)
 
     @cached_property
     def directory(self):
@@ -285,10 +333,7 @@ class DaycareSubsidyCalculator(object):
         return next(d for d in self.daycares.values() if d.title == title)
 
     def calculate(self, *args, **kwargs):
-        with localcontext() as ctx:
-            ctx.prec = 5
-
-            return self.calculate_precisely(*args, **kwargs)
+        return self.calculate_precisely(*args, **kwargs)
 
     def calculate_precisely(self, daycare, services, income, wealth, rebate):
         """ Creates a detailed calculation of the subsidy paid by Winterthur.
@@ -334,7 +379,11 @@ class DaycareSubsidyCalculator(object):
 
         base.op(
             title="Vermögenszuschlag",
-            amount=max((wealth - cfg.max_wealth) * cfg.wealth_premium, 0),
+            amount=max(
+                (wealth - cfg.max_wealth)
+                * cfg.wealth_premium
+                / Decimal('100'),
+                0),
             operation="+",
             note=f"""
                 Der Vermögenszuschlag beträgt {fmt(cfg.wealth_premium)}% des
@@ -365,14 +414,15 @@ class DaycareSubsidyCalculator(object):
 
         gross.op(
             title="Faktor",
-            amount=cfg.wealth_factor,
+            amount=cfg.factor(daycare),
             currency=None,
             operation="×",
             note="""
                 Ihr Elternbeitrag wird aufgrund eines Faktors berechnet
                 (Kita-Reglement Art. 20 Abs 3).
             """,
-            output_format=format_precise)
+            output_format=format_precise,
+            amount_places=10)
 
         gross.op(
             title="Einkommensabhängiger Elternbeitragsbestandteil",
@@ -409,7 +459,8 @@ class DaycareSubsidyCalculator(object):
 
         net.op(
             title="Elternbeitrag netto",
-            operation="=")
+            operation="=",
+            amount=max(cfg.min_rate, gross.total - rebate))
 
         # Actual contribution
         # -------------------
@@ -471,7 +522,8 @@ class DaycareSubsidyCalculator(object):
             note="""
                 Faktor für jährliche Öffnungswochen Ihrer Kita.
             """,
-            output_format=format_precise)
+            output_format=format_precise,
+            amount_places=4)
 
         parent_share_per_month = monthly.op(
             title="Elternbeitrag pro Monat",

@@ -46,16 +46,16 @@ class WinterthurDaycareSettingsForm(Form):
         places=0,
         validators=[InputRequired()])
 
+    max_subsidy = DecimalField(
+        label=_("Maximum subsidy"),
+        fieldset=_("Variables"),
+        places=0,
+        validators=[InputRequired()])
+
     wealth_premium = DecimalField(
         label=_("Wealth premium (%)"),
         fieldset=_("Variables"),
         places=2,
-        validators=[InputRequired()])
-
-    wealth_factor = DecimalField(
-        label=_("Factor"),
-        fieldset=_("Variables"),
-        places=10,
         validators=[InputRequired()])
 
     rebate = DecimalField(
