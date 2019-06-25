@@ -560,10 +560,14 @@ class DaycareSubsidyCalculator(object):
 
             yield (_("Total"), None, format_5_cents(total))
 
+        total = round_to(parent_share_per_month, '0.05')\
+            + round_to(city_share_per_month, '0.05')
+
         return Bunch(
             blocks=(base, gross, net, actual, monthly),
             parent_share_per_month=format_5_cents(parent_share_per_month),
             city_share_per_month=format_5_cents(city_share_per_month),
+            total_per_month=format_5_cents(total),
             agenda=tuple(services_table()),
         )
 

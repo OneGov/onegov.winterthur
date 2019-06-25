@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE 1.0\n"
-"POT-Creation-Date: 2019-06-21 15:34+0200\n"
+"POT-Creation-Date: 2019-06-25 10:01+0200\n"
 "PO-Revision-Date: 2017-03-02 09:52+0100\n"
 "Last-Translator: Denis Krienbühl <denis.krienbuehl@seantis.ch>\n"
 "Language-Team: German\n"
@@ -202,6 +202,9 @@ msgstr "Ihre monatlichen Kosten"
 msgid "Our monthly contribution"
 msgstr "Unser monatlicher Beitrag"
 
+msgid "Daycare cost"
+msgstr "Betreuungskosten"
+
 msgid ""
 "Since your taxable income and wealth is above 75'000.00 CHF, you are not "
 "eligible for any contributions by the city. You need to pay the full rate of "
@@ -373,11 +376,11 @@ msgstr "Minimal Tagestarif"
 msgid "Maximum day-rate"
 msgstr "Maximal Tagestarif"
 
+msgid "Maximum subsidy"
+msgstr ""
+
 msgid "Wealth premium (%)"
 msgstr "Vermögenszuschlag"
-
-msgid "Factor"
-msgstr "Faktor"
 
 msgid "Rebate (%)"
 msgstr "Rabatt (%)"
@@ -393,6 +396,9 @@ msgstr "Ungültige "
 
 msgid "Calculate"
 msgstr "Berechnen"
+
+#~ msgid "Factor"
+#~ msgstr "Faktor"
 
 #~ msgid "Per Week"
 #~ msgstr "Pro Woche"

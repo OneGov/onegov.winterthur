@@ -8,7 +8,7 @@
             <h2 i18n:translate>Summary</h2>
             <div class="summary">
                 <dl class="summary-amounts">
-                    <div class="plain">
+                    <div class="info">
                         <dt i18n:translate>Your monthly costs</dt>
                         <dd>${calculation.parent_share_per_month} CHF</dd>
                     </div>
@@ -16,6 +16,11 @@
                     <div class="${calculation.city_share_per_month != '0.00' and 'success' or 'warning'}">
                         <dt i18n:translate>Our monthly contribution</dt>
                         <dd>${calculation.city_share_per_month} CHF</dd>
+                    </div>
+
+                    <div class="plain">
+                        <dt i18n:translate>Daycare cost</dt>
+                        <dd>${calculation.total_per_month} CHF</dd>
                     </div>
                 </dl>
 
