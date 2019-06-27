@@ -77,7 +77,7 @@ class Daycare(object):
     def __init__(self, id, title, rate, weeks):
         self.id = id
         self.title = title
-        self.rate = rate
+        self.rate = Decimal(rate)
         self.weeks = weeks
 
     @property

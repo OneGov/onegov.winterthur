@@ -586,14 +586,35 @@ table.responsive {
             flex-wrap: wrap;
             justify-content: space-between;
 
-            div {
+            > div {
                 background: $gray-ultra-light;
                 border: 0;
                 border-radius: 3px;
 
                 display: inline-block;
                 padding: .5rem .75rem .75rem;
+                position: relative;
                 width: calc(33% - .75rem);
+
+                &:nth-child(1)::after,
+                &:nth-child(2)::after {
+                    font-weight: bold;
+                    height: 1rem;
+                    line-height: 1rem;
+                    position: absolute;
+                    right: -1.125rem;
+                    text-align: center;
+                    top: 2.75rem;
+                    width: 1rem;
+                }
+
+                &:nth-child(1)::after {
+                    content: "+";
+                }
+
+                &:nth-child(2)::after {
+                    content: "=";
+                }
 
                 @media #{$small-only} {
                     & {
@@ -601,7 +622,17 @@ table.responsive {
                     }
 
                     & + div {
-                        margin-top: .75rem;
+                        margin-top: 1.5rem;
+                    }
+
+                    &:nth-child(1)::after,
+                    &:nth-child(2)::after {
+                        position: absolute;
+                        top: 5rem;
+                        display: block;
+                        width: 100%;
+                        text-align: center;
+                        right: 0;
                     }
                 }
 
@@ -610,31 +641,26 @@ table.responsive {
                 }
 
                 dd {
-                    border-radius: 3px;
-                    display: inline-block;
+                    background: $white;
+                    border-radius: 1px;
+                    box-shadow: 0 4px 0 darken($gray, 10%);
+                    color: $body-font-color;
+                    display: block;
                     font-weight: bold;
                     margin-bottom: 0;
                     padding: 0 .5rem;
                 }
 
                 &.success dd {
-                    background: $green;
-                    color: $white;
-                }
-
-                &.plain dd {
-                    background: $white;
-                    color: $body-font-color;
+                    box-shadow: 0 4px 0 $green-light;
                 }
 
                 &.info dd {
-                    background: $blue-dark;
-                    color: $white;
+                    box-shadow: 0 4px 0 $blue-light;
                 }
 
                 &.warning dd {
-                    background: $yellow-dark;
-                    color: $white;
+                    box-shadow: 0 4px 0 $orange;
                 }
             }
         }
