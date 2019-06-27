@@ -28,51 +28,79 @@
                     Since your taxable income and wealth is above 75'000.00 CHF, you are not eligible for
                     any contributions by the city. You need to pay the full rate of your daycare.
                 </div>
-
-                <h3 i18n:translate>Your costs per week</h3>
-                <table class="summary-agenda">
-                    <thead class="show-for-sr">
-                        <tr>
-                            <th i18n:translate>Day</th>
-                            <th i18n:translate>Service</th>
-                            <th i18n:translate>Cost</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr tal:repeat="(label, service, cost) calculation.agenda">
-                            <td>${label}</td>
-                            <td>${service}</td>
-                            <td>${cost} CHF</td>
-                        </tr>
-                    </tbody>
-                </table>
             </div>
 
-            <div tal:condition="eligible" tal:repeat="block calculation.blocks" class="block block-${block.id}">
-                <h2>${block.title}</h2>
+            <tal:b condition="eligible">
+                <a href="#" data-toggle=".calculation-details"
+                    i18n:translate class="show-details"
+                    i18n:attributes="data-alt-text"
+                    data-alt-text="Hide details">
+                    Show details
+                </a>
 
-                <table>
-                    <thead class="show-for-sr">
-                        <tr>
-                            <td i18n:translate class="hide-for-small-only">Note</td>
-                            <td i18n:translate>Title</td>
-                            <td i18n:translate>Operation</td>
-                            <td i18n:translate>Amount</td>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr tal:repeat="result block.results" class="${result.important and 'important-result'}">
-                            <td class="hide-for-small-only">${result.note}</td>
-                            <td>${result.title}</td>
-                            <td>${result.operation}</td>
-                            <td>${result.readable_amount} ${result.currency}</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+                <div class="calculation-details" style="display: none;">
+                    <h2 i18n:translate>Your costs per week</h2>
+                    <table class="summary-agenda">
+                        <thead class="show-for-sr">
+                            <tr>
+                                <th i18n:translate>Day</th>
+                                <th i18n:translate>Service</th>
+                                <th i18n:translate>Cost</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr tal:repeat="(label, service, cost) calculation.agenda">
+                                <td>${label}</td>
+                                <td>${service}</td>
+                                <td>${cost} CHF</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <div class="calculation-blocks">
+                        <div tal:repeat="block calculation.blocks" class="block block-${block.id}">
+                            <h2>${block.title}</h2>
+
+                            <table>
+                                <thead class="show-for-sr">
+                                    <tr>
+                                        <td i18n:translate class="hide-for-small-only">Note</td>
+                                        <td i18n:translate>Title</td>
+                                        <td i18n:translate>Operation</td>
+                                        <td i18n:translate>Amount</td>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr tal:repeat="result block.results" class="${result.important and 'important-result'}">
+                                        <td class="hide-for-small-only">${result.note}</td>
+                                        <td>${result.title}</td>
+                                        <td>${result.operation}</td>
+                                        <td>${result.readable_amount} ${result.currency}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="calculation-explanation" tal:condition="settings.explanation|nothing">
+                        <tal:b replace="structure settings.explanation" />
+                    </div>
+                </div>
+            </tal:b>
         </div>
         <div class="daycare-calculator">
+            <h2 i18n:translate>Your details</h2>
             <div metal:use-macro="layout.macros['form']" />
+
+            <h2 i18n:translate>Privacy Notice</h2>
+            <div class="panel privacy-notice">
+                Die Stadt Winterthur speichert Ihre persönlichen Angaben aus
+                dem Formular nur zur Bearbeitung des erforderlichen Zweckes.
+                Die Daten werden nicht an Dritte weitergegeben und nach der
+                Bearbeitung wieder gelöscht. Mit der Verwendung des Formulars
+                erklären Sie sich mit der Bearbeitung Ihrer Daten
+                einverstanden.
+            </div>
         </div>
     </tal:b>
 </div>

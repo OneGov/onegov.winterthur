@@ -3,6 +3,7 @@ import textwrap
 from onegov.core.security import Secret
 from onegov.directory import Directory, DirectoryCollection
 from onegov.form import Form
+from onegov.form.fields import HtmlField
 from onegov.org.models import Organisation
 from onegov.org.views.settings import handle_generic_settings
 from onegov.winterthur import _
@@ -76,6 +77,11 @@ class WinterthurDaycareSettingsForm(Form):
         validators=[InputRequired()],
         choices=None)
 
+    explanation = HtmlField(
+        label=_("Explanation"),
+        fieldset=_("Details"),
+        render_kw={'rows': 32, 'data-editor': 'yaml'})
+
     def populate_obj(self, obj, *args, **kwargs):
         super().populate_obj(obj, *args, **kwargs)
         obj.meta['daycare_settings'] = {
@@ -121,7 +127,8 @@ class WinterthurDaycareSettingsForm(Form):
 
 @WinterthurApp.form(model=Organisation, name='daycare-settings',
                     template='form.pt', permission=Secret,
-                    form=WinterthurDaycareSettingsForm, setting=_("Daycare"),
-                    icon='fa-child')
+                    form=WinterthurDaycareSettingsForm,
+                    setting=_("Daycare Calculator"),
+                    icon='fa-calculator')
 def custom_handle_settings(self, request, form):
     return handle_generic_settings(self, request, form, _("Daycare Settings"))

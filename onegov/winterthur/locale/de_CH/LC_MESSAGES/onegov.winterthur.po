@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE 1.0\n"
-"POT-Creation-Date: 2019-06-25 10:01+0200\n"
+"POT-Creation-Date: 2019-06-27 16:53+0200\n"
 "PO-Revision-Date: 2017-03-02 09:52+0100\n"
 "Last-Translator: Denis Krienbühl <denis.krienbuehl@seantis.ch>\n"
 "Language-Team: German\n"
@@ -214,6 +214,12 @@ msgstr ""
 "Sie nicht berechtigt, städtische Beiträge zu erhalten. Sie bezahlen den "
 "Tagestarif Ihrer Kita."
 
+msgid "Hide details"
+msgstr "Details verstecken"
+
+msgid "Show details"
+msgstr "Details anzeigen"
+
 msgid "Your costs per week"
 msgstr "Ihre Kosten pro Woche"
 
@@ -237,6 +243,12 @@ msgstr "Operation"
 
 msgid "Amount"
 msgstr "Betrag"
+
+msgid "Your details"
+msgstr "Ihre Angaben"
+
+msgid "Privacy Notice"
+msgstr "Hinweis zur Datenübertragung"
 
 msgid "Responsible Official Construction Site"
 msgstr "Zuständiger Sachbearbeiter Baustelle"
@@ -358,6 +370,9 @@ msgstr "Das Strassenverzeichnis wurde aktualisiert"
 msgid "Daycare Settings"
 msgstr "Kita Einstellungen"
 
+msgid "Daycare Calculator"
+msgstr "Beitragsrechner"
+
 msgid "Maximum taxable income"
 msgstr "Maximal steuerbares Einkommen"
 
@@ -377,7 +392,7 @@ msgid "Maximum day-rate"
 msgstr "Maximal Tagestarif"
 
 msgid "Maximum subsidy"
-msgstr ""
+msgstr "Maximal städtischer Beitrag"
 
 msgid "Wealth premium (%)"
 msgstr "Vermögenszuschlag"
@@ -390,6 +405,12 @@ msgstr "Verzeichnis"
 
 msgid "Institutions"
 msgstr "Institutionen"
+
+msgid "Explanation"
+msgstr "Erklärung"
+
+msgid "Details"
+msgstr "Details"
 
 msgid "Invalid services configuration"
 msgstr "Ungültige "
