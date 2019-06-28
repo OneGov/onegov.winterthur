@@ -80,7 +80,7 @@ class WinterthurDaycareSettingsForm(Form):
     explanation = HtmlField(
         label=_("Explanation"),
         fieldset=_("Details"),
-        render_kw={'rows': 32, 'data-editor': 'yaml'})
+        render_kw={'rows': 32})
 
     def populate_obj(self, obj, *args, **kwargs):
         super().populate_obj(obj, *args, **kwargs)

@@ -57,30 +57,30 @@
                         </tbody>
                     </table>
 
-                    <div class="calculation-blocks">
-                        <div tal:repeat="block calculation.blocks" class="block block-${block.id}">
-                            <h2>${block.title}</h2>
+                    <table class="summary-blocks">
+                        <thead class="show-for-sr">
+                            <tr>
+                                <td i18n:translate class="hide-for-small-only">Note</td>
+                                <td i18n:translate>Title</td>
+                                <td i18n:translate>Operation</td>
+                                <td i18n:translate>Amount</td>
+                            </tr>
+                        </thead>
+                        <tbody tal:repeat="block calculation.blocks">
+                            <tr class="block-head">
+                                <th colspan="4">
+                                    <h2>${block.title}</h2>
+                                </th>
+                            </tr>
 
-                            <table>
-                                <thead class="show-for-sr">
-                                    <tr>
-                                        <td i18n:translate class="hide-for-small-only">Note</td>
-                                        <td i18n:translate>Title</td>
-                                        <td i18n:translate>Operation</td>
-                                        <td i18n:translate>Amount</td>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr tal:repeat="result block.results" class="${result.important and 'important-result'}">
-                                        <td class="hide-for-small-only">${result.note}</td>
-                                        <td>${result.title}</td>
-                                        <td>${result.operation}</td>
-                                        <td>${result.readable_amount} ${result.currency}</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
+                            <tr tal:repeat="result block.results" class="${result.important and 'important-result'}">
+                                <td class="hide-for-small-only">${result.note}</td>
+                                <td>${result.title}</td>
+                                <td>${result.operation}</td>
+                                <td>${result.readable_amount} ${result.currency}</td>
+                            </tr>
+                        </tbody>
+                    </table>
 
                     <div class="calculation-explanation" tal:condition="settings.explanation|nothing">
                         <tal:b replace="structure settings.explanation" />

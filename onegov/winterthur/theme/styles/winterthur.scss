@@ -527,12 +527,12 @@ table.responsive {
 /*
     Daycare calculator
 */
-
-
 .daycare-calculator {
     max-width: 725px;
 
     form {
+        margin-bottom: 1rem;
+
         .field-help {
             max-width: $max-line-width;
         }
@@ -552,6 +552,10 @@ table.responsive {
 
         input {
             cursor: pointer;
+        }
+
+        & + .error {
+            margin-top: calc(-1.25rem - 1px);
         }
 
         label {
@@ -585,7 +589,7 @@ table.responsive {
         color: $body-font-color;
         display: block;
         font-size: .875rem;
-        margin-bottom: 1rem;
+        margin-bottom: 2rem;
         padding: .5rem;
 
         &.toggled {
@@ -608,9 +612,14 @@ table.responsive {
         }
     }
 
+    .show-details.toggled {
+        margin-bottom: 0;
+    }
+
     .show-details.toggled + .calculation-details {
         border-bottom-color: $gray;
         border-top: 0;
+        margin-bottom: 2rem;
     }
 
     .calculation-explanation {
@@ -627,8 +636,8 @@ table.responsive {
         padding: 1rem;
 
         @media #{$small-only} {
+            border-width: 2px 0;
             padding: 0;
-            border-width: 2px 0 2px 0;
         }
 
         h2 {
@@ -679,6 +688,7 @@ table.responsive {
     }
 
     .summary {
+
         dl.summary-amounts {
             display: flex;
             flex-wrap: wrap;
@@ -688,8 +698,8 @@ table.responsive {
                 background: $gray-ultra-light;
                 border: 0;
                 border-radius: 3px;
-
                 display: inline-block;
+                line-height: 2rem;
                 padding: .5rem .75rem .75rem;
                 position: relative;
                 width: calc(33% - .75rem);
@@ -702,7 +712,7 @@ table.responsive {
                     position: absolute;
                     right: -1.125rem;
                     text-align: center;
-                    top: 2.75rem;
+                    top: 3.33rem;
                     width: 1rem;
                 }
 
@@ -729,7 +739,7 @@ table.responsive {
                         position: absolute;
                         right: 0;
                         text-align: center;
-                        top: 5rem;
+                        top: 5.8rem;
                         width: 100%;
                     }
                 }
@@ -803,6 +813,43 @@ table.responsive {
         &:nth-child(4) {
             text-align: right;
             width: 20%;
+        }
+    }
+
+    table.summary-blocks {
+        border: 0;
+
+        /* border */
+        tr td:last-child {
+            border-right: 1px solid $gray-light;
+        }
+
+        tr td:first-child {
+            border-left: 1px solid $gray-light;
+        }
+
+        .block-head + tr td {
+            border-top: 1px solid $gray-light;
+        }
+
+        tbody tr:last-child td {
+            border-bottom: 1px solid $gray-light;
+        }
+
+        @media #{$small-only} {
+            tr td:nth-child(2) {
+                border-left: 1px solid $gray-light;
+            }
+        }
+
+        /* block headings that look like normal headings */
+        .block-head th {
+            border: 0;
+            padding: 1.25rem 0 .5rem;
+        }
+
+        thead + tbody tr th {
+            padding-top: 0 !important;
         }
     }
 }
